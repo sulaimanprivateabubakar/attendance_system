@@ -12,15 +12,18 @@
 <nav class="navbar">
     <div class="navbar-brand">📋 QR Attendance</div>
     <div class="navbar-menu">
-        <?php if (Auth::isLecturer()): ?>
+        <?php if (Auth::isAdmin()): ?>
+            <a href="<?= BASE_URL ?>/admin/dashboard">Dashboard</a>
+            <a href="<?= BASE_URL ?>/admin/users">Users</a>
+            <a href="<?= BASE_URL ?>/admin/courses">Courses</a>
+            <a href="<?= BASE_URL ?>/admin/departments">Departments</a>
+            <a href="<?= BASE_URL ?>/admin/reports">Reports</a>
+        <?php elseif (Auth::isLecturer()): ?>
             <a href="<?= BASE_URL ?>/lecturer/dashboard">Dashboard</a>
             <a href="<?= BASE_URL ?>/lecturer/sessions">Sessions</a>
-            <a href="<?= BASE_URL ?>/lecturer/sessions/create" class="btn-primary">+ New Session</a>
+            <a href="<?= BASE_URL ?>/lecturer/sessions/create">+ New Session</a>
         <?php elseif (Auth::isStudent()): ?>
             <a href="<?= BASE_URL ?>/student/dashboard">Dashboard</a>
-        <?php elseif (Auth::isAdmin()): ?>
-            <a href="<?= BASE_URL ?>/admin/dashboard">Dashboard</a>
-            <a href="<?= BASE_URL ?>/admin/reports">Reports</a>
         <?php endif; ?>
         <span class="navbar-user">👤 <?= htmlspecialchars(Auth::user()['name']) ?></span>
         <a href="<?= BASE_URL ?>/logout" class="btn-logout">Logout</a>
