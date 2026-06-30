@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 29, 2026 at 05:16 PM
+-- Generation Time: Jun 30, 2026 at 05:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,6 +73,13 @@ CREATE TABLE `courses` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `courses`
+--
+
+INSERT INTO `courses` (`id`, `department_id`, `lecturer_id`, `code`, `name`, `description`, `credit_hours`, `semester`, `academic_year`, `is_active`, `created_at`) VALUES
+(1, 2, 1, 'ITIL', 'Introduction in Information Systems', NULL, 2, 2, '2023/2024', 1, '2026-06-30 07:31:44');
+
 -- --------------------------------------------------------
 
 --
@@ -108,6 +115,14 @@ CREATE TABLE `enrollments` (
   `enrolled_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `enrollments`
+--
+
+INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrolled_at`) VALUES
+(1, 2, 1, '2026-06-30 09:38:21'),
+(2, 1, 1, '2026-06-30 09:38:27');
+
 -- --------------------------------------------------------
 
 --
@@ -122,6 +137,13 @@ CREATE TABLE `lecturers` (
   `phone` varchar(30) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `lecturers`
+--
+
+INSERT INTO `lecturers` (`id`, `user_id`, `department_id`, `staff_number`, `phone`, `created_at`) VALUES
+(1, 3, 2, 'STF-700479', NULL, '2026-06-30 07:16:21');
 
 -- --------------------------------------------------------
 
@@ -159,6 +181,20 @@ CREATE TABLE `sessions` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `course_id`, `lecturer_id`, `title`, `session_date`, `start_time`, `end_time`, `qr_token`, `qr_expires_at`, `qr_image_path`, `status`, `created_at`) VALUES
+(1, 1, 1, 'week 1', '2026-06-30', '08:00:00', '10:00:00', '7e6779cdc5da82d12b093e98a38fb0fa6751e56a5dd7d055865ee37aaed03908', '2026-06-30 08:08:20', 'storage/qr_codes/session_1_7e6779cdc5da82d12b093e98a38fb0fa6751e56a5dd7d055865ee37aaed03908.png', 'closed', '2026-06-30 07:32:43'),
+(2, 1, 1, 'week 2', '2026-06-30', '08:00:00', '10:00:00', '69393065c0ac2ede6304c2e9cbb7129c45247e43f4d16f4e80464f4aca08df04', '2026-06-30 07:50:47', 'storage/qr_codes/session_2_69393065c0ac2ede6304c2e9cbb7129c45247e43f4d16f4e80464f4aca08df04.png', 'closed', '2026-06-30 07:43:41'),
+(3, 1, 1, 'week 4', '2026-06-30', '08:00:00', '10:00:00', '8ce147f2bae75324b7b11246d83c54db92f00e543cba88b831b5558f5f5ac1c6', '2026-06-30 09:41:32', 'storage/qr_codes/session_3_8ce147f2bae75324b7b11246d83c54db92f00e543cba88b831b5558f5f5ac1c6.png', 'closed', '2026-06-30 09:29:24'),
+(4, 1, 1, 'week 2', '2026-06-30', '08:00:00', '10:00:00', 'c44932f147c20233e1f714469b3e20a1f5dcd4b6bd5670b7a61d3f088df363ad', '2026-06-30 09:39:41', 'storage/qr_codes/session_4_c44932f147c20233e1f714469b3e20a1f5dcd4b6bd5670b7a61d3f088df363ad.png', 'closed', '2026-06-30 09:31:34'),
+(5, 1, 1, 'week 5', '2026-06-30', '08:00:00', '10:00:00', '5803986512b0f930d274b23c3ae6a16a87f0b5234baf234ea08f816ad41d4714', '2026-06-30 12:28:18', 'storage/qr_codes/session_5_5803986512b0f930d274b23c3ae6a16a87f0b5234baf234ea08f816ad41d4714.png', 'closed', '2026-06-30 09:41:49'),
+(6, 1, 1, 'week 6', '2026-06-30', '08:00:00', '10:00:00', '34d7cf91e97b7327aed6d0b3be143ddfac6d3d8e08bc416dd987de37041b5701', '2026-06-30 12:28:13', 'storage/qr_codes/session_6_34d7cf91e97b7327aed6d0b3be143ddfac6d3d8e08bc416dd987de37041b5701.png', 'closed', '2026-06-30 12:24:50'),
+(7, 1, 1, 'wek', '2026-06-30', '14:01:00', '16:00:00', '10eba4ba005e67241c1a8441bcd9772fb76f94accbf6283a2c1f87091e44ed01', '2026-06-30 12:33:13', 'storage/qr_codes/session_7_10eba4ba005e67241c1a8441bcd9772fb76f94accbf6283a2c1f87091e44ed01.png', 'closed', '2026-06-30 12:28:53'),
+(8, 1, 1, 'week 8', '2026-06-30', '09:00:00', '15:00:00', 'ca42ff78b2f58929d28df30986b366d0cdc4f0a846d1d52eac3f10be116d4c6e', '2026-06-30 12:34:04', 'storage/qr_codes/session_8_ca42ff78b2f58929d28df30986b366d0cdc4f0a846d1d52eac3f10be116d4c6e.png', 'active', '2026-06-30 12:34:02');
+
 -- --------------------------------------------------------
 
 --
@@ -174,6 +210,14 @@ CREATE TABLE `students` (
   `phone` varchar(30) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `students`
+--
+
+INSERT INTO `students` (`id`, `user_id`, `department_id`, `student_number`, `year_of_study`, `phone`, `created_at`) VALUES
+(1, 4, 2, 'STU-4AB021CC', NULL, NULL, '2026-06-30 07:16:59'),
+(2, 5, 1, 'STU-F988484F', NULL, NULL, '2026-06-30 09:00:55');
 
 -- --------------------------------------------------------
 
@@ -197,7 +241,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `created_at`, `updated_at`) VALUES
-(2, 'System Admin', 'admin@university.edu', '$2y$10$TKh8H1.PfbuNIcNBAsEYtu./3LBk/3OyZcMGJZ5sRtDQkCBFiUhY2', 'admin', 1, '2026-06-29 15:05:03', '2026-06-29 15:05:03');
+(2, 'System Admin', 'admin@university.edu', '$2y$10$TOXXhEi5e6NwEVs4gFlWBeUzOBm0N.DoKY5zAJ3jYS8tyTn0/XJI6', 'admin', 1, '2026-06-29 15:05:03', '2026-06-30 07:11:31'),
+(3, 'Wilson Leman', 'wleman@mail.com', '$2y$10$oqH/Y/2P1QMZO5SfDL6n9u3/9xzKeI6l66TB2klJweYjGOxbMetCm', 'lecturer', 1, '2026-06-30 07:16:21', '2026-06-30 07:16:21'),
+(4, 'Austin Phiri', 'austin@gmail.com', '$2y$10$T2H3.JbZd7bioGdZu7xF.OeOq9YrKyflcvRRCV04FvFdDjmbvfDVC', 'student', 1, '2026-06-30 07:16:59', '2026-06-30 07:16:59'),
+(5, 'Sulaiman Abubakar', 'abu@gmail.com', '$2y$10$/uhOG9z5u0Wf7kxXbc.hBeoT/4BmngXY2rIVvbD9txm0arZQkxL0i', 'student', 1, '2026-06-30 09:00:55', '2026-06-30 09:01:43');
 
 --
 -- Indexes for dumped tables
@@ -311,7 +358,7 @@ ALTER TABLE `audit_logs`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -323,13 +370,13 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `lecturers`
 --
 ALTER TABLE `lecturers`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
@@ -341,19 +388,19 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
