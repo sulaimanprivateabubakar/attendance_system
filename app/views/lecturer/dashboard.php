@@ -2,7 +2,7 @@
 
 <div class="page-header">
     <div>
-        <h1>Welcome, <?= htmlspecialchars($user['name']) ?> 👋</h1>
+        <h1>Welcome, <?= htmlspecialchars($user['name']) ?></h1>
         <p class="subtitle">Manage your sessions and track attendance</p>
     </div>
     <a href="<?= BASE_URL ?>/lecturer/sessions/create" class="btn btn-primary">+ New Session</a>

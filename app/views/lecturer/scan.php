@@ -22,15 +22,14 @@
 
             <?php if ($session['status'] === 'pending'): ?>
                 <p class="info">Activate the session to start scanning.</p>
-                <form method="POST" action="/lecturer/sessions/<?= $session['id'] ?>/activate">
+                <form method="POST" action="<?= BASE_URL ?>/lecturer/sessions/<?= $session['id'] ?>/activate">
                     <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
                     <button type="submit" class="btn btn-primary btn-large">▶ Activate Session</button>
                 </form>
 
             <?php elseif ($session['status'] === 'active'): ?>
-                <!-- QR Image or API fallback -->
                 <?php if ($session['qr_image_path'] && file_exists(ROOT_PATH . '/' . $session['qr_image_path'])): ?>
-                    <img src="/<?= htmlspecialchars($session['qr_image_path']) ?>"
+                    <img src="<?= BASE_URL ?>/<?= htmlspecialchars($session['qr_image_path']) ?>"
                          alt="QR Code" class="qr-image" id="qrImage">
                 <?php else: ?>
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=<?= urlencode($scanUrl) ?>"
@@ -42,7 +41,7 @@
                 <div class="qr-actions">
                     <button onclick="toggleFullscreen()" class="btn btn-secondary">⛶ Fullscreen</button>
                     <form method="POST"
-                          action="/lecturer/sessions/<?= $session['id'] ?>/close"
+                          action="<?= BASE_URL ?>/lecturer/sessions/<?= $session['id'] ?>/close"
                           onsubmit="return confirm('Close this session?');"
                           style="display:inline">
                         <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
@@ -102,13 +101,11 @@
 
 <?php if ($session['status'] === 'active'): ?>
 <script>
-// Auto-refresh attendance list every 10 seconds
 setInterval(() => {
-    fetch('/api/attendance.php?session_id=<?= $session['id'] ?>')
+    fetch('<?= BASE_URL ?>/api/attendance.php?session_id=<?= $session['id'] ?>')
         .then(r => r.json())
         .then(data => {
             document.getElementById('attendanceCount').textContent = data.count;
-            // Re-render rows
             let html = '';
             if (data.records.length === 0) {
                 html = '<p class="empty">No students have scanned yet.</p>';

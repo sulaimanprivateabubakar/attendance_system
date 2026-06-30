@@ -56,6 +56,7 @@ $router->get( '/lecturer/dashboard',            'LecturerController@dashboard', 
 $router->get( '/lecturer/sessions',             'LecturerController@sessions',          ['auth','role:lecturer']);
 $router->get( '/lecturer/sessions/create',      'LecturerController@createSessionForm', ['auth','role:lecturer']);
 $router->post('/lecturer/sessions/create',      'LecturerController@createSession',     ['auth','role:lecturer']);
+$router->post('/lecturer/sessions/:id/activate','LecturerController@activateSession', ['auth','role:lecturer']);
 $router->get( '/lecturer/sessions/:id/scan',    'LecturerController@scanView',          ['auth','role:lecturer']);
 $router->post('/lecturer/sessions/:id/activate','LecturerController@activateSession',   ['auth','role:lecturer']);
 $router->post('/lecturer/sessions/:id/close',   'LecturerController@closeSession',      ['auth','role:lecturer']);
