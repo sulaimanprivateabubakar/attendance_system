@@ -14,14 +14,25 @@ define('BASE_URL',  rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']
 if (file_exists(ROOT_PATH . '/.env')) {
     foreach (file(ROOT_PATH . '/.env') as $line) {
         $line = trim($line);
+        // Skip empty lines and full-line comments
         if ($line === '' || str_starts_with($line, '#')) continue;
-        [$key, $val] = explode('=', $line, 2) + [1 => ''];
-        $_ENV[trim($key)] = trim($val, " \t\n\r\0\x0B\"'");
+        // Must contain =
+        if (!str_contains($line, '=')) continue;
+        [$key, $val] = explode('=', $line, 2);
+        $key = trim($key);
+        $val = trim($val);
+        // Strip inline comments (e.g. value # comment)
+        if (str_contains($val, ' #')) {
+            $val = trim(substr($val, 0, strpos($val, ' #')));
+        }
+        // Strip surrounding quotes
+        $val = trim($val, "\"'");
+        $_ENV[$key] = $val;
     }
 }
 
 // ── Timezone ─────────────────────────────────────────────────────────────────
-date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Africa/Blantyre');
+date_default_timezone_set('Africa/Blantyre');
 
 // ── Autoload core classes ────────────────────────────────────────────────────
 require_once APP_PATH . '/core/Database.php';

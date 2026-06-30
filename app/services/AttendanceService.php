@@ -21,17 +21,20 @@ class AttendanceService
     {
         // 1. Find active session by token
         $session = $this->db->single(
-            "SELECT * FROM sessions
-              WHERE qr_token = ?
-                AND status = 'active'
-                AND qr_expires_at > NOW()
-              LIMIT 1",
-            [$token]
-        );
+    "SELECT * FROM sessions
+      WHERE qr_token = ?
+        AND status = 'active'
+      LIMIT 1",
+    [$token]
+);
 
-        if (!$session) {
-            return ['success' => false, 'message' => 'QR code is invalid or has expired.'];
-        }
+if (!$session) {
+    return ['success' => false, 'message' => 'QR code is invalid or session is not active.'];
+}
+
+if (strtotime($session['qr_expires_at']) < time()) {
+    return ['success' => false, 'message' => 'This QR code has expired. Ask your lecturer to extend the session.'];
+}
 
         // 2. Check enrollment
         $enrolled = $this->db->single(

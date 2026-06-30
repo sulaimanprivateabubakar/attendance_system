@@ -93,12 +93,12 @@ protected function redirect(string $path): void
 
     // ── CSRF ─────────────────────────────────────────────────────────────────
 
-   protected function validateCsrf(): void
+ protected function validateCsrf(): void
 {
     $token = $this->post('_csrf') ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
     if (!Auth::verifyCsrfToken($token)) {
         http_response_code(419);
-        die('DEBUG: posted=[' . $token . '] session=[' . ($_SESSION['csrf_token'] ?? 'NONE') . '] sid=[' . session_id() . ']');
+        die('CSRF token mismatch.');
     }
 }
 }

@@ -50,7 +50,7 @@
 
         <p class="form-hint">
             💡 The QR code will remain scannable for
-            <?= $_ENV['QR_EXPIRY_MINUTES'] ?? 15 ?> minutes after the session end time.
+            <?= $_ENV['QR_EXPIRY_MINUTES'] ?? 15 ?> minutes from session creation.
         </p>
 
         <button type="submit" class="btn btn-primary btn-large">

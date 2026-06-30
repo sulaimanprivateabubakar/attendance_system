@@ -7,12 +7,12 @@ class SessionService
     private string   $qrSecret;
     private int      $qrExpiryMinutes;
 
-    public function __construct()
-    {
-        $this->db              = Database::getInstance();
-        $this->qrSecret        = $_ENV['QR_SECRET']          ?? 'default_secret_change_me';
-        $this->qrExpiryMinutes = (int)($_ENV['QR_EXPIRY_MINUTES'] ?? 15);
-    }
+public function __construct()
+{
+    $this->db              = Database::getInstance();
+    $this->qrSecret        = $_ENV['QR_SECRET']          ?? 'default_secret_change_me';
+    $this->qrExpiryMinutes = (int)($_ENV['QR_EXPIRY_MINUTES'] ?? 120);
+}
 
     // ── Create a session ─────────────────────────────────────────────────────
 
@@ -31,16 +31,13 @@ class SessionService
             [$data['course_id'], $lecturerId]
         );
         if (!$course) {
-            return ['success' => false, 'error' => 'Course not found or not assigned to you.'];
-        }
+    return ['success' => false, 'error' => 'Course not found or not assigned to you.'];
+}
 
-        $token     = $this->generateToken();
-        $expiresAt = date('Y-m-d H:i:s',
-            strtotime($data['session_date'] . ' ' . $data['end_time'])
-            + ($this->qrExpiryMinutes * 60)
-        );
+$token     = $this->generateToken();
+$expiresAt = date('Y-m-d H:i:s', time() + ($this->qrExpiryMinutes * 60));
 
-        $sessionId = $this->db->insert(
+$sessionId = $this->db->insert(
             "INSERT INTO sessions
                 (course_id, lecturer_id, title, session_date, start_time, end_time,
                  qr_token, qr_expires_at, status)
