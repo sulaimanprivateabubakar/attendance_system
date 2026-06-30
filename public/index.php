@@ -79,6 +79,8 @@ $router->get( '/admin/departments',         'AdminController@departments',     [
 $router->post('/admin/departments/create',  'AdminController@createDepartment',['auth','role:admin']);
 $router->get( '/admin/reports',             'AdminController@reports',         ['auth','role:admin']);
 $router->get( '/admin/reports/export',      'AdminController@exportReport',    ['auth','role:admin']);
+$router->get( '/admin/courses/:id/enrollment', 'AdminController@enrollmentView', ['auth','role:admin']);
+$router->post('/admin/courses/:id/enroll',     'AdminController@enrollStudent',  ['auth','role:admin']);
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 $router->dispatch();

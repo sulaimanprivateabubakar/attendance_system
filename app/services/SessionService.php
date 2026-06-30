@@ -156,8 +156,13 @@ class SessionService
     {
         $scanUrl  = $this->buildScanUrl($token);
         $filename = "session_{$sessionId}_{$token}.png";
-        $dir      = ROOT_PATH . '/storage/qr_codes/';
+        $dir      = ROOT_PATH . '/public/storage/qr_codes/';
         $fullPath = $dir . $filename;
+
+        // Ensure the public-facing directory exists
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
 
         // Use endroid/qr-code if available
         if (class_exists('Endroid\QrCode\QrCode')) {
@@ -176,12 +181,8 @@ class SessionService
             }
         }
 
-        // Fallback: store the Google Chart URL as a text file reference
-        // (Replace with real library in production)
-        $fallbackUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='
-                       . urlencode($scanUrl);
-        file_put_contents($dir . "session_{$sessionId}.url", $fallbackUrl);
-        return null; // real path not saved; controller uses fallback URL
+        // Fallback: no library installed, use external QR API directly in the view
+        return null;
     }
 
     // ── Token generation ─────────────────────────────────────────────────────

@@ -208,6 +208,66 @@ class AdminController extends Controller
         $this->redirect('/admin/courses');
     }
 
+    // GET /admin/courses/:id/enrollment
+    public function enrollmentView(array $params): void
+    {
+        $courseId = (int)$params['id'];
+
+        $course = $this->db->single(
+            "SELECT c.*, u.name AS lecturer_name
+               FROM courses c
+               LEFT JOIN lecturers l ON l.id = c.lecturer_id
+               LEFT JOIN users     u ON u.id = l.user_id
+              WHERE c.id = ?",
+            [$courseId]
+        );
+
+        if (!$course) {
+            $this->flash('error', 'Course not found.');
+            $this->redirect('/admin/courses');
+        }
+
+        $enrolled = $this->db->all(
+            "SELECT s.student_number, u.name, u.email, e.enrolled_at
+               FROM enrollments e
+               JOIN students s ON s.id = e.student_id
+               JOIN users    u ON u.id = s.user_id
+              WHERE e.course_id = ?
+              ORDER BY u.name",
+            [$courseId]
+        );
+
+        $this->view('admin/enrollment', [
+            'user'     => Auth::user(),
+            'course'   => $course,
+            'enrolled' => $enrolled,
+            'csrf'     => Auth::generateCsrfToken(),
+        ]);
+    }
+
+    // POST /admin/courses/:id/enroll  (enroll a student)
+    public function enrollStudent(array $params): void
+    {
+        $this->validateCsrf();
+        $courseId  = (int)$params['id'];
+        $studentId = (int)$this->post('student_id');
+
+        $exists = $this->db->single(
+            "SELECT id FROM enrollments WHERE student_id=? AND course_id=?",
+            [$studentId, $courseId]
+        );
+        if (!$exists) {
+            $this->db->insert(
+                "INSERT INTO enrollments (student_id, course_id) VALUES (?,?)",
+                [$studentId, $courseId]
+            );
+            $this->flash('success', 'Student enrolled.');
+        } else {
+            $this->flash('error', 'Student already enrolled.');
+        }
+        $this->redirect('/admin/courses/' . $courseId . '/enrollment');
+    }
+
     // GET /admin/departments
     public function departments(): void
     {

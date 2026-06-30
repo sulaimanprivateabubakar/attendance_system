@@ -28,7 +28,7 @@
                 </form>
 
             <?php elseif ($session['status'] === 'active'): ?>
-                <?php if ($session['qr_image_path'] && file_exists(ROOT_PATH . '/' . $session['qr_image_path'])): ?>
+                <?php if ($session['qr_image_path'] && file_exists(ROOT_PATH . '/public/' . $session['qr_image_path'])): ?>
                     <img src="<?= BASE_URL ?>/<?= htmlspecialchars($session['qr_image_path']) ?>"
                          alt="QR Code" class="qr-image" id="qrImage">
                 <?php else: ?>

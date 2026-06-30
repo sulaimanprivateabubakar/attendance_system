@@ -39,11 +39,14 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        // Honour intended URL if set
+        // Honour intended URL if set (strip BASE_URL prefix since redirect() re-adds it)
         $intended = $_SESSION['intended_url'] ?? null;
         unset($_SESSION['intended_url']);
 
         if ($intended) {
+            if (BASE_URL !== '' && str_starts_with($intended, BASE_URL)) {
+                $intended = substr($intended, strlen(BASE_URL));
+            }
             $this->redirect($intended);
         }
 
