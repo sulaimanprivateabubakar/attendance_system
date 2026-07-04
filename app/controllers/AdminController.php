@@ -38,24 +38,24 @@ class AdminController extends Controller
 
     // GET /admin/users
     public function users(): void
-    {
-        $users = $this->db->all(
-            "SELECT u.*,
-                    COALESCE(s.student_number, l.staff_number) AS identifier,
-                    d.name AS department
-               FROM users u
-               LEFT JOIN students    s ON s.user_id = u.id
-               LEFT JOIN lecturers   l ON l.user_id = u.id
-               LEFT JOIN departments d ON d.id = COALESCE(s.department_id, l.department_id)
-              ORDER BY u.created_at DESC"
-        );
+{
+    $users = $this->db->all(
+        "SELECT u.*,
+                COALESCE(s.student_number, l.staff_number) AS identifier,
+                d.name AS department
+           FROM users u
+           LEFT JOIN students    s ON s.user_id = u.id
+           LEFT JOIN lecturers   l ON l.user_id = u.id
+           LEFT JOIN departments d ON d.id = COALESCE(s.department_id, l.department_id)
+          ORDER BY u.role, u.name ASC"
+    );
 
-        $this->view('admin/users', [
-            'user'  => Auth::user(),
-            'users' => $users,
-            'flash' => $this->getFlash(),
-        ]);
-    }
+    $this->view('admin/users', [
+        'user'  => Auth::user(),
+        'users' => $users,
+        'flash' => $this->getFlash(),
+    ]);
+}
 
     // POST /admin/users/:id/toggle
     public function toggleUser(array $params): void
@@ -313,17 +313,77 @@ class AdminController extends Controller
 
     // GET /admin/reports
     public function reports(): void
-    {
-        $courses = $this->db->all(
-            "SELECT id, code, name FROM courses WHERE is_active = 1 ORDER BY name"
-        );
+{
+    $courses = $this->db->all(
+        "SELECT id, code, name FROM courses WHERE is_active = 1 ORDER BY name"
+    );
 
-        $this->view('admin/reports', [
-            'user'    => Auth::user(),
-            'courses' => $courses,
-            'flash'   => $this->getFlash(),
-        ]);
+    // Overall stats
+    $totalSessions = (int)$this->db->scalar("SELECT COUNT(*) FROM sessions WHERE status='closed'");
+    $totalScans    = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance");
+    $presentCount  = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance WHERE status='present'");
+    $lateCount     = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance WHERE status='late'");
+
+    // Absent = total possible - attended
+    $totalEnrolled = (int)$this->db->scalar("SELECT COUNT(*) FROM enrollments");
+    $absentCount   = max(0, ($totalEnrolled * $totalSessions) - $totalScans);
+
+    // Average attendance rate
+    $avgRate = 0;
+    if ($totalSessions > 0 && $totalEnrolled > 0) {
+        $avgRate = round($totalScans / ($totalSessions * $totalEnrolled) * 100, 1);
     }
+
+    $stats = [
+        'total_sessions' => $totalSessions,
+        'total_scans'    => $totalScans,
+        'present_count'  => $presentCount,
+        'late_count'     => $lateCount,
+        'absent_count'   => $absentCount,
+        'avg_rate'       => $avgRate,
+    ];
+
+    // Per-course stats for bar chart
+    $courseStats = $this->db->all(
+        "SELECT c.code, c.name,
+                COUNT(DISTINCT s.id)   AS session_count,
+                COUNT(DISTINCT e.id)   AS enrolled_count,
+                COUNT(DISTINCT a.id)   AS attended_count,
+                CASE
+                    WHEN COUNT(DISTINCT s.id) * COUNT(DISTINCT e.id) = 0 THEN 0
+                    ELSE ROUND(
+                        COUNT(DISTINCT a.id) /
+                        (COUNT(DISTINCT s.id) * COUNT(DISTINCT e.id)) * 100, 1
+                    )
+                END AS avg_rate
+           FROM courses c
+           LEFT JOIN sessions    s ON s.course_id = c.id AND s.status = 'closed'
+           LEFT JOIN enrollments e ON e.course_id = c.id
+           LEFT JOIN attendance  a ON a.session_id = s.id
+          WHERE c.is_active = 1
+          GROUP BY c.id
+          ORDER BY c.name"
+    );
+
+    // Daily trend last 14 days
+    $dailyTrend = $this->db->all(
+        "SELECT DATE(scanned_at) AS scan_date,
+                COUNT(*) AS scan_count
+           FROM attendance
+          WHERE scanned_at >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+          GROUP BY DATE(scanned_at)
+          ORDER BY scan_date ASC"
+    );
+
+    $this->view('admin/reports', [
+        'user'        => Auth::user(),
+        'courses'     => $courses,
+        'stats'       => $stats,
+        'courseStats' => $courseStats,
+        'dailyTrend'  => $dailyTrend,
+        'flash'       => $this->getFlash(),
+    ]);
+}
 
     // GET /admin/reports/export
     public function exportReport(): void

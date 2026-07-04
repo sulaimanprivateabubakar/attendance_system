@@ -1,72 +1,107 @@
-<?php $pageTitle = 'Admin Dashboard'; ?>
+<?php $pageTitle = 'Dashboard'; ?>
 
-<div class="page-header">
+<div class="page-title">
     <div>
         <h1>Admin Dashboard</h1>
-        <p class="subtitle">System overview</p>
+        <p>Welcome back, <?= htmlspecialchars($user['name']) ?></p>
     </div>
-    <div class="header-actions">
-        <a href="<?= BASE_URL ?>/admin/users/create" class="btn btn-primary">+ Add User</a>
-        <a href="<?= BASE_URL ?>/admin/courses/create" class="btn btn-secondary">+ Add Course</a>
-    </div>
-</div>
-
-<div class="stat-strip">
-    <div class="stat-box">
-        <span class="stat-num"><?= (int)$stats['students'] ?></span>
-        <span class="stat-label">Students</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num"><?= (int)$stats['lecturers'] ?></span>
-        <span class="stat-label">Lecturers</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num"><?= (int)$stats['courses'] ?></span>
-        <span class="stat-label">Active Courses</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num"><?= (int)$stats['sessions'] ?></span>
-        <span class="stat-label">Total Sessions</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-num text-success"><?= (int)$stats['today'] ?></span>
-        <span class="stat-label">Scans Today</span>
+    <div class="actions">
+        <a href="<?= BASE_URL ?>/admin/users/create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add User
+        </a>
+        <a href="<?= BASE_URL ?>/admin/courses/create" class="btn btn-secondary">
+            <i class="fas fa-book"></i> Add Course
+        </a>
     </div>
 </div>
 
+<!-- Stats -->
+<div class="stats">
+    <a href="<?= BASE_URL ?>/admin/users?filter=student" class="stat-card" style="text-decoration:none;cursor:pointer">
+        <div class="stat-info">
+            <h3>Students</h3>
+            <h1 data-counter="<?= (int)$stats['students'] ?>"><?= (int)$stats['students'] ?></h1>
+            <small>Registered</small>
+        </div>
+        <div class="stat-icon blue"><i class="fas fa-user-graduate"></i></div>
+    </a>
+    <a href="<?= BASE_URL ?>/admin/users?filter=lecturer" class="stat-card" style="text-decoration:none;cursor:pointer">
+        <div class="stat-info">
+            <h3>Lecturers</h3>
+            <h1 data-counter="<?= (int)$stats['lecturers'] ?>"><?= (int)$stats['lecturers'] ?></h1>
+            <small>Active staff</small>
+        </div>
+        <div class="stat-icon green"><i class="fas fa-chalkboard-teacher"></i></div>
+    </a>
+    <a href="<?= BASE_URL ?>/admin/courses" class="stat-card" style="text-decoration:none;cursor:pointer">
+        <div class="stat-info">
+            <h3>Courses</h3>
+            <h1 data-counter="<?= (int)$stats['courses'] ?>"><?= (int)$stats['courses'] ?></h1>
+            <small>Active courses</small>
+        </div>
+        <div class="stat-icon amber"><i class="fas fa-book-open"></i></div>
+    </a>
+    <a href="<?= BASE_URL ?>/admin/reports" class="stat-card" style="text-decoration:none;cursor:pointer">
+        <div class="stat-info">
+            <h3>Scans Today</h3>
+            <h1 data-counter="<?= (int)$stats['today'] ?>"><?= (int)$stats['today'] ?></h1>
+            <small>Attendance records</small>
+        </div>
+        <div class="stat-icon cyan"><i class="fas fa-qrcode"></i></div>
+    </a>
+</div>
+
+<!-- Quick Nav -->
 <div class="admin-nav-grid">
-    <a href="<?= BASE_URL ?>/admin/users"       class="admin-nav-card">👥 Manage Users</a>
-    <a href="<?= BASE_URL ?>/admin/courses"     class="admin-nav-card">📖 Manage Courses</a>
-    <a href="<?= BASE_URL ?>/admin/departments" class="admin-nav-card">🏛 Departments</a>
-    <a href="<?= BASE_URL ?>/admin/reports"     class="admin-nav-card">📊 Reports & Export</a>
+    <a href="<?= BASE_URL ?>/admin/users" class="admin-nav-card">
+        <div class="admin-nav-icon"><i class="fas fa-users"></i></div>
+        Manage Users
+    </a>
+    <a href="<?= BASE_URL ?>/admin/courses" class="admin-nav-card">
+        <div class="admin-nav-icon"><i class="fas fa-clipboard-list"></i></div>
+        Manage Courses
+    </a>
+    <a href="<?= BASE_URL ?>/admin/departments" class="admin-nav-card">
+        <div class="admin-nav-icon"><i class="fas fa-sitemap"></i></div>
+        Departments
+    </a>
+    <a href="<?= BASE_URL ?>/admin/reports" class="admin-nav-card">
+        <div class="admin-nav-icon"><i class="fas fa-chart-line"></i></div>
+        Reports & Export
+    </a>
 </div>
 
-<section class="section">
-    <h2 class="section-title">Recent Sessions</h2>
-    <div class="card">
+<!-- Recent Sessions -->
+<div class="panel">
+    <div class="panel-header">
+        <h2><i class="fas fa-history" style="color:var(--primary);margin-right:8px"></i>Recent Sessions</h2>
+        <span class="badge badge-count"><?= count($recentSessions) ?></span>
+    </div>
+    <div class="table-wrap">
         <?php if (empty($recentSessions)): ?>
-            <p class="empty">No sessions yet.</p>
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <p>No sessions yet.</p>
+        </div>
         <?php else: ?>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Course</th>
-                    <th>Lecturer</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Attended</th>
-                    <th>Status</th>
+                    <th>Course</th><th>Lecturer</th><th>Date</th>
+                    <th>Time</th><th>Attended</th><th>Status</th>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($recentSessions as $s): ?>
                 <tr>
-                    <td><strong><?= htmlspecialchars($s['course_code']) ?></strong>
-                        <?= htmlspecialchars($s['course_name']) ?></td>
+                    <td>
+                        <strong><?= htmlspecialchars($s['course_code']) ?></strong>
+                        <div style="font-size:.78rem;color:var(--text-muted)"><?= htmlspecialchars($s['course_name']) ?></div>
+                    </td>
                     <td><?= htmlspecialchars($s['lecturer_name']) ?></td>
                     <td><?= htmlspecialchars($s['session_date']) ?></td>
                     <td><?= htmlspecialchars(substr($s['start_time'],0,5)) ?></td>
-                    <td><?= (int)$s['att_count'] ?></td>
+                    <td><strong><?= (int)$s['att_count'] ?></strong></td>
                     <td><span class="badge badge-<?= $s['status'] ?>"><?= $s['status'] ?></span></td>
                 </tr>
             <?php endforeach; ?>
@@ -74,4 +109,4 @@
         </table>
         <?php endif; ?>
     </div>
-</section>
+</div>

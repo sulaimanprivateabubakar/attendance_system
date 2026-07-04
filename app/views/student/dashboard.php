@@ -1,89 +1,119 @@
-<?php $pageTitle = 'Student Dashboard'; ?>
+<?php $pageTitle = 'Dashboard'; ?>
 
-<div class="page-header">
+<div class="page-title">
     <div>
-        <h1>Welcome, <?= htmlspecialchars($user['name']) ?> 👋</h1>
-        <p class="subtitle">Your enrolled courses and attendance overview</p>
+        <h1>My Dashboard</h1>
+        <p>Welcome back, <?= htmlspecialchars($user['name']) ?></p>
     </div>
 </div>
 
-<!-- ── Enrolled Courses ─────────────────────────────────────────────── -->
-<section class="section">
-    <h2 class="section-title">My Courses</h2>
+<!-- Stats -->
+<div class="stat-strip">
+    <div class="stat-box">
+        <span class="stat-num"><?= count($courses) ?></span>
+        <span class="stat-label">Courses</span>
+    </div>
+    <?php
+    $totalAtt  = array_sum(array_column($courses, 'attended'));
+    $totalSess = array_sum(array_column($courses, 'total_sessions'));
+    $avgPct    = $totalSess > 0 ? round($totalAtt / $totalSess * 100, 1) : 0;
+    ?>
+    <div class="stat-box">
+        <span class="stat-num text-success"><?= $totalAtt ?></span>
+        <span class="stat-label">Sessions Attended</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-num <?= $avgPct >= 75 ? 'text-success' : ($avgPct >= 50 ? 'text-warn' : 'text-danger') ?>">
+            <?= $avgPct ?>%
+        </span>
+        <span class="stat-label">Avg Attendance</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-num"><?= count($recent) ?></span>
+        <span class="stat-label">Recent Scans</span>
+    </div>
+</div>
 
+<!-- Enrolled Courses -->
+<div class="section">
+    <div class="section-title">My Courses</div>
     <?php if (empty($courses)): ?>
-        <div class="empty-state">
-            <div class="empty-icon">📚</div>
-            <p>You are not enrolled in any courses yet.</p>
-            <p class="text-muted">Contact your administrator to get enrolled.</p>
-        </div>
+    <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <p>You are not enrolled in any courses yet.</p>
+        <p style="font-size:.8rem;color:var(--text-muted)">Contact your administrator to get enrolled.</p>
+    </div>
     <?php else: ?>
     <div class="course-grid">
         <?php foreach ($courses as $c): ?>
+        <?php
+        $pct = (float)($c['pct'] ?? 0);
+        $barClass = $pct >= 75 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
+        ?>
         <div class="course-card">
             <div class="course-card-header">
-                <span class="course-code"><?= htmlspecialchars($c['code']) ?></span>
-                <span class="course-semester">Sem <?= htmlspecialchars($c['semester'] ?? '–') ?></span>
+                <span class="course-code-badge"><?= htmlspecialchars($c['code']) ?></span>
+                <span style="font-size:.72rem;color:var(--text-muted)">Sem <?= $c['semester'] ?? '–' ?></span>
             </div>
-            <h3 class="course-name"><?= htmlspecialchars($c['name']) ?></h3>
-            <p class="course-lecturer">👤 <?= htmlspecialchars($c['lecturer_name']) ?></p>
+            <div class="course-name"><?= htmlspecialchars($c['name']) ?></div>
+            <div class="course-lecturer">
+                <i class="fas fa-chalkboard-teacher" style="margin-right:5px;color:var(--text-muted)"></i>
+                <?= htmlspecialchars($c['lecturer_name']) ?>
+            </div>
 
-            <!-- Attendance bar -->
-            <?php
-                $pct = (float)($c['pct'] ?? 0);
-                $barClass = $pct >= 75 ? 'bar-good' : ($pct >= 50 ? 'bar-warn' : 'bar-bad');
-            ?>
             <div class="att-bar-wrap">
                 <div class="att-bar-label">
                     <span>Attendance</span>
                     <strong><?= $pct ?>%</strong>
                 </div>
-                <div class="att-bar-track">
-                    <div class="att-bar-fill <?= $barClass ?>"
-                         style="width: <?= min($pct, 100) ?>%"></div>
+                <div class="progress">
+                    <div class="progress-bar <?= $barClass ?>" style="width:<?= min($pct,100) ?>%"></div>
                 </div>
-                <p class="att-bar-note">
+                <div class="att-bar-note">
                     <?= (int)$c['attended'] ?> / <?= (int)$c['total_sessions'] ?> sessions attended
-                </p>
+                </div>
             </div>
 
-            <a href="/student/courses/<?= $c['id'] ?>" class="btn btn-secondary btn-sm">View History</a>
+            <a href="<?= BASE_URL ?>/student/courses/<?= $c['id'] ?>" class="btn btn-secondary btn-sm">
+                <i class="fas fa-history"></i> View History
+            </a>
         </div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
-</section>
+</div>
 
-<!-- ── Recent Activity ──────────────────────────────────────────────── -->
-<section class="section">
-    <h2 class="section-title">Recent Activity</h2>
-
+<!-- Recent Activity -->
+<div class="section">
+    <div class="section-title">Recent Activity</div>
     <?php if (empty($recent)): ?>
-        <p class="text-muted">No attendance records yet.</p>
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <p>No attendance records yet.</p>
+    </div>
     <?php else: ?>
-    <div class="card">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Session</th>
-                    <th>Date</th>
-                    <th>Time Scanned</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($recent as $row): ?>
-                <tr>
-                    <td><strong><?= htmlspecialchars($row['code']) ?></strong></td>
-                    <td><?= htmlspecialchars($row['title'] ?? 'Class Session') ?></td>
-                    <td><?= htmlspecialchars($row['session_date']) ?></td>
-                    <td><?= htmlspecialchars(date('H:i', strtotime($row['scanned_at']))) ?></td>
-                    <td><span class="badge badge-<?= $row['status'] ?>"><?= $row['status'] ?></span></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="panel">
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Course</th><th>Session</th><th>Date</th>
+                        <th>Time Scanned</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($recent as $row): ?>
+                    <tr>
+                        <td><strong><?= htmlspecialchars($row['code']) ?></strong></td>
+                        <td><?= htmlspecialchars($row['title'] ?? 'Class Session') ?></td>
+                        <td><?= htmlspecialchars($row['session_date']) ?></td>
+                        <td><?= htmlspecialchars(date('H:i', strtotime($row['scanned_at']))) ?></td>
+                        <td><span class="badge badge-<?= $row['status'] ?>"><?= $row['status'] ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <?php endif; ?>
-</section>
+</div>

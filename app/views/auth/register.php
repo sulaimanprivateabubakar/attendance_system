@@ -1,8 +1,9 @@
-<?php $pageTitle = 'Register – QR Attendance'; ?>
+<?php $pageTitle = 'Register'; ?>
 
 <div class="auth-card" style="max-width:520px">
-    <h1>🎓 QR Attendance</h1>
-    <h2>Student Registration</h2>
+    <div class="auth-logo">🎓</div>
+    <h1>Create Account</h1>
+    <h2>Register as a student</h2>
 
     <form method="POST" action="<?= BASE_URL ?>/register" class="form">
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
@@ -17,6 +18,7 @@
                 <input type="email" name="email" required placeholder="you@university.edu">
             </div>
         </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label>Student Number</label>
@@ -33,6 +35,7 @@
                 </select>
             </div>
         </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label>Department</label>
@@ -44,19 +47,24 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Phone (optional)</label>
+                <label>Phone <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
                 <input type="text" name="phone" placeholder="+265 ...">
             </div>
         </div>
+
         <div class="form-group">
             <label>Password</label>
-            <input type="password" name="password" required minlength="8" placeholder="Min 8 characters">
+            <input type="password" name="password" required
+                   minlength="8" placeholder="Min 8 characters">
         </div>
 
-        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        <button type="submit" class="btn btn-primary btn-full">
+            <i class="fas fa-user-plus"></i> Create Account
+        </button>
     </form>
 
     <p class="auth-footer">
-        Already have an account? <a href="<?= BASE_URL ?>/login">Sign In</a>
+        Already have an account?
+        <a href="<?= BASE_URL ?>/login">Sign In</a>
     </p>
 </div>

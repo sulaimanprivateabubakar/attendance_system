@@ -1,14 +1,16 @@
 <?php $pageTitle = 'Create Session'; ?>
 
-<div class="page-header">
+<div class="page-title">
     <div>
-        <a href="<?= BASE_URL ?>/lecturer/sessions" class="back-link">← Back to Sessions</a>
+        <a href="<?= BASE_URL ?>/lecturer/sessions" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Sessions
+        </a>
         <h1>Create New Session</h1>
-        <p class="subtitle">A QR code will be generated automatically</p>
+        <p>A QR code will be generated automatically</p>
     </div>
 </div>
 
-<div class="form-card">
+<div class="form-card" style="max-width:640px">
     <form method="POST" action="<?= BASE_URL ?>/lecturer/sessions/create" class="form">
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
 
@@ -25,16 +27,13 @@
         </div>
 
         <div class="form-group">
-            <label>Session Title (optional)</label>
+            <label>Session Title <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
             <input type="text" name="title" placeholder="e.g. Week 3 – Lecture">
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date</label>
-                <input type="date" name="session_date" required
-                       value="<?= date('Y-m-d') ?>">
-            </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="session_date" required value="<?= date('Y-m-d') ?>">
         </div>
 
         <div class="form-row">
@@ -48,13 +47,13 @@
             </div>
         </div>
 
-        <p class="form-hint">
-            💡 The QR code will remain scannable for
-            <?= $_ENV['QR_EXPIRY_MINUTES'] ?? 15 ?> minutes from session creation.
-        </p>
+        <div class="form-hint">
+            <i class="fas fa-info-circle"></i>
+            QR code stays valid for <?= $_ENV['QR_EXPIRY_MINUTES'] ?? 120 ?> minutes from session creation.
+        </div>
 
-        <button type="submit" class="btn btn-primary btn-large">
-            Generate Session & QR Code
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-qrcode"></i> Generate Session & QR Code
         </button>
     </form>
 </div>

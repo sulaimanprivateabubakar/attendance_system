@@ -1,13 +1,16 @@
 <?php $pageTitle = 'Create Course'; ?>
 
-<div class="page-header">
+<div class="page-title">
     <div>
-        <a href="<?= BASE_URL ?>/admin/courses" class="back-link">← Back to Courses</a>
+        <a href="<?= BASE_URL ?>/admin/courses" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Courses
+        </a>
         <h1>Create Course</h1>
+        <p>Add a new course to the system</p>
     </div>
 </div>
 
-<div class="form-card">
+<div class="form-card" style="max-width:700px">
     <form method="POST" action="<?= BASE_URL ?>/admin/courses/create" class="form">
         <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
 
@@ -21,6 +24,7 @@
                 <input type="text" name="name" required placeholder="e.g. Introduction to Programming">
             </div>
         </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label>Department</label>
@@ -43,6 +47,7 @@
                 </select>
             </div>
         </div>
+
         <div class="form-row">
             <div class="form-group">
                 <label>Semester</label>
@@ -56,12 +61,17 @@
                 <input type="number" name="credit_hours" value="3" min="1" max="6">
             </div>
         </div>
+
         <div class="form-group">
             <label>Academic Year</label>
             <input type="text" name="academic_year" placeholder="e.g. 2024/2025">
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Course</button>
-        <a href="<?= BASE_URL ?>/admin/courses" class="btn btn-secondary">Cancel</a>
+        <div style="display:flex;gap:12px;margin-top:8px">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Course
+            </button>
+            <a href="<?= BASE_URL ?>/admin/courses" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>

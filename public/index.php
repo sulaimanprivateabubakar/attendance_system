@@ -94,4 +94,7 @@ $router->get( '/admin/courses/:id/enrollment', 'AdminController@enrollmentView',
 $router->post('/admin/courses/:id/enroll',     'AdminController@enrollStudent',  ['auth','role:admin']);
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
+// Profile routes (all authenticated users)
+$router->get( '/profile',        'ProfileController@edit',   ['auth']);
+$router->post('/profile/update', 'ProfileController@update', ['auth']);
 $router->dispatch();

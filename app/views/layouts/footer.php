@@ -1,9 +1,18 @@
-</main>
+<?php if (Auth::check()): ?>
+        </div><!-- end page-content -->
 
-<footer class="footer">
-    <p>&copy; <?= date('Y') ?> QR Attendance System</p>
-</footer>
+        <footer class="footer">
+            <p>&copy; <?= date('Y') ?> QR Attendance System &mdash; Iqra University</p>
+        </footer>
 
-<script src="/assets/js/app.js"></script>
+    </div><!-- end main -->
+
+</div><!-- end wrapper -->
+
+<?php else: ?>
+</div><!-- end auth-wrapper -->
+<?php endif; ?>
+
+<script src="<?= BASE_URL ?>/assets/js/app.js"></script>
 </body>
 </html>
