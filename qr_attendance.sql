@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 30, 2026 at 11:37 PM
+-- Generation Time: Jul 04, 2026 at 06:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,7 +44,9 @@ CREATE TABLE `attendance` (
 
 INSERT INTO `attendance` (`id`, `session_id`, `student_id`, `scanned_at`, `ip_address`, `device_info`, `status`, `notes`) VALUES
 (1, 18, 3, '2026-06-30 21:28:20', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
-(2, 19, 3, '2026-06-30 21:33:56', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'present', NULL);
+(2, 19, 3, '2026-06-30 21:33:56', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'present', NULL),
+(3, 20, 3, '2026-07-03 20:45:35', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
+(4, 21, 4, '2026-07-04 08:38:19', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL);
 
 -- --------------------------------------------------------
 
@@ -87,7 +89,8 @@ CREATE TABLE `courses` (
 
 INSERT INTO `courses` (`id`, `department_id`, `lecturer_id`, `code`, `name`, `description`, `credit_hours`, `semester`, `academic_year`, `is_active`, `created_at`) VALUES
 (1, 2, NULL, 'ITIL', 'Introduction in Information Systems', NULL, 2, 2, '2023/2024', 1, '2026-06-30 07:31:44'),
-(2, 1, 2, 'ITST', 'Statistics', NULL, 3, 2, '2023/2024', 1, '2026-06-30 20:11:02');
+(2, 1, 2, 'ITST', 'Statistics', NULL, 3, 2, '2023/2024', 1, '2026-06-30 20:11:02'),
+(3, 3, 3, 'IB', 'Introduction in Business', NULL, 3, 1, '2023/2024', 1, '2026-07-04 08:34:37');
 
 -- --------------------------------------------------------
 
@@ -130,7 +133,8 @@ CREATE TABLE `enrollments` (
 
 INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrolled_at`) VALUES
 (3, 3, 1, '2026-06-30 20:08:25'),
-(4, 3, 2, '2026-06-30 20:11:19');
+(4, 3, 2, '2026-06-30 20:11:19'),
+(5, 4, 3, '2026-07-04 08:37:11');
 
 -- --------------------------------------------------------
 
@@ -152,7 +156,8 @@ CREATE TABLE `lecturers` (
 --
 
 INSERT INTO `lecturers` (`id`, `user_id`, `department_id`, `staff_number`, `phone`, `created_at`) VALUES
-(2, 6, 2, 'STF-97264E', NULL, '2026-06-30 20:06:43');
+(2, 6, 2, 'STF-97264E', NULL, '2026-06-30 20:06:43'),
+(3, 9, 3, 'STF-A790AD', NULL, '2026-07-04 08:32:36');
 
 -- --------------------------------------------------------
 
@@ -205,7 +210,10 @@ INSERT INTO `sessions` (`id`, `course_id`, `lecturer_id`, `title`, `session_date
 (16, 2, 2, 'wee 12', '2026-06-30', '23:00:00', '23:30:00', '13a0cccdf315fc8bcb94fa18526794e63907ed9f8a3ce5833aa30dfd165af182', '2026-06-30 21:09:01', NULL, 'closed', '2026-06-30 21:02:29'),
 (17, 2, 2, 'Week 11', '2026-06-30', '23:09:00', '23:30:00', 'ed6fa98ebb020b2466c77a7cd6edd263a4d2b132539095ef2ce8453eae441233', '2026-06-30 21:21:52', NULL, 'closed', '2026-06-30 21:09:30'),
 (18, 2, 2, 'week 43', '2026-06-30', '08:00:00', '10:00:00', '8ce8b8718986f31d385fa2aa2a311ab303e8005c2077cffba069c6995ea573b0', '2026-06-30 23:27:28', NULL, 'closed', '2026-06-30 21:27:28'),
-(19, 2, 2, 'week 12', '2026-06-30', '23:33:00', '23:30:00', 'b14068548f8326d05d6d12947d0b279fc6507b3440fdf82c57a17f7ae2999575', '2026-06-30 23:33:33', NULL, 'active', '2026-06-30 21:33:33');
+(19, 2, 2, 'week 12', '2026-06-30', '23:33:00', '23:30:00', 'b14068548f8326d05d6d12947d0b279fc6507b3440fdf82c57a17f7ae2999575', '2026-06-30 23:33:33', NULL, 'active', '2026-06-30 21:33:33'),
+(20, 2, 2, 'week 19', '2026-07-03', '08:00:00', '10:00:00', 'd3ca49347e7c1b9bc47d1926e0abfe79741c7be52e47c5475a01afda1c8abf11', '2026-07-03 22:39:53', NULL, 'active', '2026-07-03 20:39:53'),
+(21, 3, 3, 'week 4', '2026-07-04', '08:00:00', '10:00:00', '857226c8e61bfb00de257bb415c51156a1d48cdcdcc84e9dce557c3a7fe49cac', '2026-07-04 10:35:23', NULL, 'active', '2026-07-04 08:35:23'),
+(22, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', '726edf5da5d3d70a1028af6559899f8fa519dc786edd0c1d8fd2f45db837a62a', '2026-07-04 13:38:38', NULL, 'active', '2026-07-04 11:38:38');
 
 -- --------------------------------------------------------
 
@@ -228,7 +236,8 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `user_id`, `department_id`, `student_number`, `year_of_study`, `phone`, `created_at`) VALUES
-(3, 7, 2, 'STU-978313ED', NULL, NULL, '2026-06-30 20:07:22');
+(3, 7, 2, 'STU-978313ED', NULL, NULL, '2026-06-30 20:07:22'),
+(4, 8, 3, 'STU-4773DF6D', NULL, NULL, '2026-07-04 08:31:16');
 
 -- --------------------------------------------------------
 
@@ -254,7 +263,9 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `created_at`, `updated_at`) VALUES
 (2, 'System Admin', 'admin@university.edu', '$2y$10$TOXXhEi5e6NwEVs4gFlWBeUzOBm0N.DoKY5zAJ3jYS8tyTn0/XJI6', 'admin', 1, '2026-06-29 15:05:03', '2026-06-30 07:11:31'),
 (6, 'Wilson Leman', 'wleman@gmail.com', '$2y$10$I09zmZ/JPrUn588fnfY3OOMu4cSugmH7YVw.g6tuVv640MSe2b4V2', 'lecturer', 1, '2026-06-30 20:06:43', '2026-06-30 20:06:43'),
-(7, 'Austin Phiri', 'austin@gmai.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-06-30 20:07:22');
+(7, 'Austin Phiri', 'austin@gmai.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-06-30 20:07:22'),
+(8, 'Ruqaya Frank', 'ruqaya@gmail.com', '$2y$10$zzdOCa8fJuNc0Y84H7gYz.mSBxtRGjYEerXOYH3FV4qJwWcHGj6Z2', 'student', 1, '2026-07-04 08:31:16', '2026-07-04 16:17:46'),
+(9, 'Barack Husen', 'barack@gmail.com', '$2y$10$DrW9vjznRrV/juK9ffH5TeBJxIi5ZzMsAOD/qbyJrUXnSjLb5VyWS', 'lecturer', 1, '2026-07-04 08:32:36', '2026-07-04 08:32:36');
 
 --
 -- Indexes for dumped tables
@@ -356,7 +367,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `audit_logs`
@@ -368,7 +379,7 @@ ALTER TABLE `audit_logs`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -380,13 +391,13 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `lecturers`
 --
 ALTER TABLE `lecturers`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
@@ -398,19 +409,19 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
