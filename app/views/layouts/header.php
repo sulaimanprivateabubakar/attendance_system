@@ -43,27 +43,34 @@
             </ul>
         </div>
         <div class="sidebar-section">
-            <div class="sidebar-section-label">Analytics</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/admin/reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
-            </ul>
-        </div>
+    <div class="sidebar-section-label">Analytics</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/admin/reports">
+            <i class="fas fa-chart-bar"></i> Reports</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/claims">
+            <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+    </ul>
+</div>
+
 
         <?php elseif (Auth::isLecturer()): ?>
-        <div class="sidebar-section">
-            <div class="sidebar-section-label">Main</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/lecturer/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li><a href="<?= BASE_URL ?>/lecturer/sessions"><i class="fas fa-list"></i> Sessions</a></li>
-            </ul>
-        </div>
-        <div class="sidebar-section">
-            <div class="sidebar-section-label">Actions</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/lecturer/sessions/create"><i class="fas fa-plus-circle"></i> New Session</a></li>
-            </ul>
-        </div>
-
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/lecturer/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="<?= BASE_URL ?>/lecturer/sessions"><i class="fas fa-list"></i> Sessions</a></li>
+    </ul>
+</div>
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Actions</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/lecturer/sessions/create"><i class="fas fa-plus-circle"></i> New Session</a></li>
+        <li><a href="<?= BASE_URL ?>/lecturer/claims"><i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+    </ul>
+</div>
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Analytics</div>
+</div>
         <?php elseif (Auth::isStudent()): ?>
         <div class="sidebar-section">
             <div class="sidebar-section-label">Main</div>
