@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 04, 2026 at 06:24 PM
+-- Generation Time: Jul 06, 2026 at 12:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,9 @@ INSERT INTO `attendance` (`id`, `session_id`, `student_id`, `scanned_at`, `ip_ad
 (1, 18, 3, '2026-06-30 21:28:20', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
 (2, 19, 3, '2026-06-30 21:33:56', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'present', NULL),
 (3, 20, 3, '2026-07-03 20:45:35', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
-(4, 21, 4, '2026-07-04 08:38:19', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL);
+(4, 21, 4, '2026-07-04 08:38:19', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
+(5, 22, 3, '2026-07-04 21:41:04', 'manual', 'Manual entry by lecturer', 'present', NULL),
+(6, 23, 3, '2026-07-05 17:23:29', 'manual', 'Manual — confirmed by class rep', 'present', NULL);
 
 -- --------------------------------------------------------
 
@@ -124,17 +126,18 @@ CREATE TABLE `enrollments` (
   `id` int(10) UNSIGNED NOT NULL,
   `student_id` int(10) UNSIGNED NOT NULL,
   `course_id` int(10) UNSIGNED NOT NULL,
-  `enrolled_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `enrolled_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_class_rep` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `enrollments`
 --
 
-INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrolled_at`) VALUES
-(3, 3, 1, '2026-06-30 20:08:25'),
-(4, 3, 2, '2026-06-30 20:11:19'),
-(5, 4, 3, '2026-07-04 08:37:11');
+INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrolled_at`, `is_class_rep`) VALUES
+(3, 3, 1, '2026-06-30 20:08:25', 0),
+(4, 3, 2, '2026-06-30 20:11:19', 1),
+(5, 4, 3, '2026-07-04 08:37:11', 1);
 
 -- --------------------------------------------------------
 
@@ -162,6 +165,28 @@ INSERT INTO `lecturers` (`id`, `user_id`, `department_id`, `staff_number`, `phon
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `manual_attendance`
+--
+
+CREATE TABLE `manual_attendance` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `session_id` int(10) UNSIGNED NOT NULL,
+  `student_id` int(10) UNSIGNED NOT NULL,
+  `reg_number` varchar(50) NOT NULL,
+  `status` enum('pending','confirmed','rejected') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `manual_attendance`
+--
+
+INSERT INTO `manual_attendance` (`id`, `session_id`, `student_id`, `reg_number`, `status`, `created_at`) VALUES
+(1, 23, 3, 'STU-978313ED', 'confirmed', '2026-07-04 21:53:40');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `password_resets`
 --
 
@@ -173,6 +198,36 @@ CREATE TABLE `password_resets` (
   `used` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_claims`
+--
+
+CREATE TABLE `payment_claims` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `lecturer_id` int(10) UNSIGNED NOT NULL,
+  `academic_year` varchar(20) NOT NULL,
+  `month` varchar(20) NOT NULL,
+  `designation` enum('full_time','part_time') DEFAULT 'part_time',
+  `bank_name` varchar(100) DEFAULT NULL,
+  `bank_branch` varchar(100) DEFAULT NULL,
+  `account_number` varchar(50) DEFAULT NULL,
+  `telephone` varchar(30) DEFAULT NULL,
+  `hourly_rate` decimal(10,2) DEFAULT 0.00,
+  `status` enum('draft','submitted','approved','rejected') DEFAULT 'draft',
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payment_claims`
+--
+
+INSERT INTO `payment_claims` (`id`, `lecturer_id`, `academic_year`, `month`, `designation`, `bank_name`, `bank_branch`, `account_number`, `telephone`, `hourly_rate`, `status`, `submitted_at`, `notes`, `created_at`) VALUES
+(1, 2, '2026/2027', '2026-07', 'part_time', 'Naional Bank', 'Blanyre Branch', '1008726524', '+26599992399', 9000.00, 'submitted', '2026-07-05 22:14:20', 'Process it', '2026-07-05 22:02:07');
 
 -- --------------------------------------------------------
 
@@ -210,10 +265,11 @@ INSERT INTO `sessions` (`id`, `course_id`, `lecturer_id`, `title`, `session_date
 (16, 2, 2, 'wee 12', '2026-06-30', '23:00:00', '23:30:00', '13a0cccdf315fc8bcb94fa18526794e63907ed9f8a3ce5833aa30dfd165af182', '2026-06-30 21:09:01', NULL, 'closed', '2026-06-30 21:02:29'),
 (17, 2, 2, 'Week 11', '2026-06-30', '23:09:00', '23:30:00', 'ed6fa98ebb020b2466c77a7cd6edd263a4d2b132539095ef2ce8453eae441233', '2026-06-30 21:21:52', NULL, 'closed', '2026-06-30 21:09:30'),
 (18, 2, 2, 'week 43', '2026-06-30', '08:00:00', '10:00:00', '8ce8b8718986f31d385fa2aa2a311ab303e8005c2077cffba069c6995ea573b0', '2026-06-30 23:27:28', NULL, 'closed', '2026-06-30 21:27:28'),
-(19, 2, 2, 'week 12', '2026-06-30', '23:33:00', '23:30:00', 'b14068548f8326d05d6d12947d0b279fc6507b3440fdf82c57a17f7ae2999575', '2026-06-30 23:33:33', NULL, 'active', '2026-06-30 21:33:33'),
-(20, 2, 2, 'week 19', '2026-07-03', '08:00:00', '10:00:00', 'd3ca49347e7c1b9bc47d1926e0abfe79741c7be52e47c5475a01afda1c8abf11', '2026-07-03 22:39:53', NULL, 'active', '2026-07-03 20:39:53'),
+(19, 2, 2, 'week 12', '2026-06-30', '23:33:00', '23:30:00', 'b14068548f8326d05d6d12947d0b279fc6507b3440fdf82c57a17f7ae2999575', '2026-06-30 23:33:33', NULL, 'closed', '2026-06-30 21:33:33'),
+(20, 2, 2, 'week 19', '2026-07-03', '08:00:00', '10:00:00', 'd3ca49347e7c1b9bc47d1926e0abfe79741c7be52e47c5475a01afda1c8abf11', '2026-07-03 22:39:53', NULL, 'closed', '2026-07-03 20:39:53'),
 (21, 3, 3, 'week 4', '2026-07-04', '08:00:00', '10:00:00', '857226c8e61bfb00de257bb415c51156a1d48cdcdcc84e9dce557c3a7fe49cac', '2026-07-04 10:35:23', NULL, 'active', '2026-07-04 08:35:23'),
-(22, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', '726edf5da5d3d70a1028af6559899f8fa519dc786edd0c1d8fd2f45db837a62a', '2026-07-04 13:38:38', NULL, 'active', '2026-07-04 11:38:38');
+(22, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', '726edf5da5d3d70a1028af6559899f8fa519dc786edd0c1d8fd2f45db837a62a', '2026-07-04 13:38:38', NULL, 'closed', '2026-07-04 11:38:38'),
+(23, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', 'dfbe19db489e7c40f752fc1d059ae6d4bc0303125522a924359a5f883c062863', '2026-07-04 23:53:14', NULL, 'active', '2026-07-04 21:53:14');
 
 -- --------------------------------------------------------
 
@@ -264,7 +320,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `cr
 (2, 'System Admin', 'admin@university.edu', '$2y$10$TOXXhEi5e6NwEVs4gFlWBeUzOBm0N.DoKY5zAJ3jYS8tyTn0/XJI6', 'admin', 1, '2026-06-29 15:05:03', '2026-06-30 07:11:31'),
 (6, 'Wilson Leman', 'wleman@gmail.com', '$2y$10$I09zmZ/JPrUn588fnfY3OOMu4cSugmH7YVw.g6tuVv640MSe2b4V2', 'lecturer', 1, '2026-06-30 20:06:43', '2026-06-30 20:06:43'),
 (7, 'Austin Phiri', 'austin@gmai.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-06-30 20:07:22'),
-(8, 'Ruqaya Frank', 'ruqaya@gmail.com', '$2y$10$zzdOCa8fJuNc0Y84H7gYz.mSBxtRGjYEerXOYH3FV4qJwWcHGj6Z2', 'student', 1, '2026-07-04 08:31:16', '2026-07-04 16:17:46'),
+(8, 'Ruqaya Frank', 'ruqaya@gmail.com', '$2y$10$zzdOCa8fJuNc0Y84H7gYz.mSBxtRGjYEerXOYH3FV4qJwWcHGj6Z2', 'student', 1, '2026-07-04 08:31:16', '2026-07-04 22:07:16'),
 (9, 'Barack Husen', 'barack@gmail.com', '$2y$10$DrW9vjznRrV/juK9ffH5TeBJxIi5ZzMsAOD/qbyJrUXnSjLb5VyWS', 'lecturer', 1, '2026-07-04 08:32:36', '2026-07-04 08:32:36');
 
 --
@@ -324,12 +380,27 @@ ALTER TABLE `lecturers`
   ADD KEY `fk_lecturer_dept` (`department_id`);
 
 --
+-- Indexes for table `manual_attendance`
+--
+ALTER TABLE `manual_attendance`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_ma_session` (`session_id`),
+  ADD KEY `fk_ma_student` (`student_id`);
+
+--
 -- Indexes for table `password_resets`
 --
 ALTER TABLE `password_resets`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `token` (`token`),
   ADD KEY `fk_reset_user` (`user_id`);
+
+--
+-- Indexes for table `payment_claims`
+--
+ALTER TABLE `payment_claims`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_claim_lecturer` (`lecturer_id`);
 
 --
 -- Indexes for table `sessions`
@@ -367,7 +438,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `audit_logs`
@@ -400,16 +471,28 @@ ALTER TABLE `lecturers`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `manual_attendance`
+--
+ALTER TABLE `manual_attendance`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `password_resets`
 --
 ALTER TABLE `password_resets`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `payment_claims`
+--
+ALTER TABLE `payment_claims`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `students`
@@ -462,10 +545,23 @@ ALTER TABLE `lecturers`
   ADD CONSTRAINT `fk_lecturer_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `manual_attendance`
+--
+ALTER TABLE `manual_attendance`
+  ADD CONSTRAINT `fk_ma_session` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ma_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `password_resets`
 --
 ALTER TABLE `password_resets`
   ADD CONSTRAINT `fk_reset_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payment_claims`
+--
+ALTER TABLE `payment_claims`
+  ADD CONSTRAINT `fk_claim_lecturer` FOREIGN KEY (`lecturer_id`) REFERENCES `lecturers` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `sessions`
