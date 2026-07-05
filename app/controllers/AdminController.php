@@ -112,18 +112,37 @@ class AdminController extends Controller
                 );
 
                 if ($role === 'lecturer') {
-                    $staffNo = 'STF-' . strtoupper(substr(md5($email), 0, 6));
-                    $db->insert(
-                        "INSERT INTO lecturers (user_id, department_id, staff_number) VALUES (?,?,?)",
-                        [$userId, $deptId, $staffNo]
-                    );
+    $staffNo = trim($this->post('staff_number', ''));
+    if (empty($staffNo)) {
+        $this->flash('error', 'Staff number is required.');
+        $this->redirect('/admin/users/create');
+    }
+    $exists = $db->single("SELECT id FROM lecturers WHERE staff_number = ?", [$staffNo]);
+    if ($exists) {
+        $this->flash('error', 'That staff number is already registered.');
+        $this->redirect('/admin/users/create');
+    }
+    $db->insert(
+        "INSERT INTO lecturers (user_id, department_id, staff_number) VALUES (?,?,?)",
+        [$userId, $deptId, $staffNo]
+    );
                 } elseif ($role === 'student') {
-                    $stuNo = 'STU-' . strtoupper(substr(md5($email), 0, 8));
-                    $db->insert(
-                        "INSERT INTO students (user_id, department_id, student_number) VALUES (?,?,?)",
-                        [$userId, $deptId, $stuNo]
-                    );
-                }
+    $stuNo = trim($this->post('student_number', ''));
+    if (empty($stuNo)) {
+        $this->flash('error', 'Student registration number is required.');
+        $this->redirect('/admin/users/create');
+    }
+    // Check uniqueness
+    $exists = $db->single("SELECT id FROM students WHERE student_number = ?", [$stuNo]);
+    if ($exists) {
+        $this->flash('error', 'That registration number is already registered.');
+        $this->redirect('/admin/users/create');
+    }
+    $db->insert(
+        "INSERT INTO students (user_id, department_id, student_number) VALUES (?,?,?)",
+        [$userId, $deptId, $stuNo]
+    );
+}
             });
 
             $this->flash('success', 'User created successfully.');
@@ -228,14 +247,16 @@ class AdminController extends Controller
         }
 
         $enrolled = $this->db->all(
-            "SELECT s.student_number, u.name, u.email, e.enrolled_at
-               FROM enrollments e
-               JOIN students s ON s.id = e.student_id
-               JOIN users    u ON u.id = s.user_id
-              WHERE e.course_id = ?
-              ORDER BY u.name",
-            [$courseId]
-        );
+    "SELECT s.id, s.student_number, u.name, u.email,
+            e.enrolled_at,
+            COALESCE(e.is_class_rep, 0) AS is_class_rep
+       FROM enrollments e
+       JOIN students s ON s.id = e.student_id
+       JOIN users    u ON u.id = s.user_id
+      WHERE e.course_id = ?
+      ORDER BY e.is_class_rep DESC, u.name ASC",
+    [$courseId]
+);
 
         $this->view('admin/enrollment', [
             'user'     => Auth::user(),
@@ -243,6 +264,16 @@ class AdminController extends Controller
             'enrolled' => $enrolled,
             'csrf'     => Auth::generateCsrfToken(),
         ]);
+
+        $enrolled = $this->db->all(
+    "SELECT s.id, s.student_number, u.name, u.email, e.enrolled_at, e.is_class_rep
+       FROM enrollments e
+       JOIN students s ON s.id = e.student_id
+       JOIN users    u ON u.id = s.user_id
+      WHERE e.course_id = ?
+      ORDER BY e.is_class_rep DESC, u.name ASC",
+    [$courseId]
+);
     }
 
     // POST /admin/courses/:id/enroll  (enroll a student)
@@ -405,4 +436,27 @@ class AdminController extends Controller
             $reportService->exportPdf($courseId);
         }
     }
+
+
+public function setClassRep(array $params): void
+{
+    $this->validateCsrf();
+    $courseId  = (int)$params['id'];
+    $studentId = (int)$this->post('student_id');
+
+    // Remove existing rep for this course
+    $this->db->execute(
+        "UPDATE enrollments SET is_class_rep = 0 WHERE course_id = ?", [$courseId]
+    );
+
+    // Set new rep
+    $this->db->execute(
+        "UPDATE enrollments SET is_class_rep = 1
+          WHERE course_id = ? AND student_id = ?",
+        [$courseId, $studentId]
+    );
+
+    $this->flash('success', 'Class representative assigned successfully.');
+    $this->redirect('/admin/courses/' . $courseId . '/enrollment');
+}
 }

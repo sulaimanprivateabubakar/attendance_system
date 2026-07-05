@@ -21,9 +21,14 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Student Number</label>
-                <input type="text" name="student_number" required placeholder="e.g. STU2024001">
-            </div>
+    <label>Registration Number</label>
+    <input type="text" name="student_number" required
+           placeholder="Enter your official reg number e.g. 2024/CS/001">
+    <div class="form-hint" style="margin-top:6px;font-size:.75rem;color:var(--text-muted)">
+        <i class="fas fa-info-circle"></i>
+        Use the registration number provided by your institution.
+    </div>
+</div>
             <div class="form-group">
                 <label>Year of Study</label>
                 <select name="year_of_study" required>

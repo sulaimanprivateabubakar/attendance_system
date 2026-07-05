@@ -92,6 +92,11 @@ $router->get( '/admin/reports',             'AdminController@reports',         [
 $router->get( '/admin/reports/export',      'AdminController@exportReport',    ['auth','role:admin']);
 $router->get( '/admin/courses/:id/enrollment', 'AdminController@enrollmentView', ['auth','role:admin']);
 $router->post('/admin/courses/:id/enroll',     'AdminController@enrollStudent',  ['auth','role:admin']);
+$router->get( '/lecturer/sessions/:id/manual',  'LecturerController@manualAttendanceForm', ['auth','role:lecturer']);
+$router->post('/lecturer/sessions/:id/manual',  'LecturerController@manualAttendance',     ['auth','role:lecturer']);
+$router->post('/lecturer/sessions/:id/confirm', 'AttendanceController@confirmManual',      ['auth','role:student']);
+$router->post('/student/confirm-attendance/:id', 'StudentController@confirmAttendance', ['auth','role:student']);
+$router->post('/admin/courses/:id/set-rep', 'AdminController@setClassRep', ['auth','role:admin']);
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 // Profile routes (all authenticated users)

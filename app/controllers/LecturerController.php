@@ -132,4 +132,106 @@ class LecturerController extends Controller
         $this->flash('success', 'Session closed.');
         $this->redirect('/lecturer/sessions');
     }
+
+    // GET /lecturer/sessions/:id/manual
+public function manualAttendanceForm(array $params): void
+{
+    $session = $this->sessionService->getSessionWithDetails((int)$params['id']);
+    if (!$session || $session['lecturer_id'] != $this->lecturerId) {
+        $this->redirect('/lecturer/sessions');
+    }
+
+    // Get class rep for this course
+    $classRep = $this->db->single(
+        "SELECT s.id, u.name, s.student_number
+           FROM enrollments e
+           JOIN students s ON s.id = e.student_id
+           JOIN users    u ON u.id = s.user_id
+          WHERE e.course_id = ? AND e.is_class_rep = 1
+          LIMIT 1",
+        [$session['course_id']]
+    );
+
+    // Get pending manual requests
+    $pending = $this->db->all(
+        "SELECT ma.*, u.name AS student_name, s.student_number
+           FROM manual_attendance ma
+           JOIN students s ON s.id = ma.student_id
+           JOIN users    u ON u.id = s.user_id
+          WHERE ma.session_id = ? AND ma.status = 'pending'
+          ORDER BY ma.created_at ASC",
+        [(int)$params['id']]
+    );
+
+    $this->view('lecturer/manual_attendance', [
+        'user'     => Auth::user(),
+        'session'  => $session,
+        'classRep' => $classRep,
+        'pending'  => $pending,
+        'csrf'     => Auth::generateCsrfToken(),
+    ]);
+}
+
+// POST /lecturer/sessions/:id/manual
+public function manualAttendance(array $params): void
+{
+    $this->validateCsrf();
+    $sessionId = (int)$params['id'];
+    $regNo     = trim($this->post('reg_number', ''));
+
+    if (empty($regNo)) {
+        $this->flash('error', 'Please enter a registration number.');
+        $this->redirect('/lecturer/sessions/' . $sessionId . '/manual');
+    }
+
+    // Find student by reg number
+    $student = $this->db->single(
+        "SELECT s.id, u.name FROM students s
+           JOIN users u ON u.id = s.user_id
+          WHERE s.student_number = ? LIMIT 1",
+        [$regNo]
+    );
+
+    if (!$student) {
+        $this->flash('error', 'No student found with registration number: ' . htmlspecialchars($regNo));
+        $this->redirect('/lecturer/sessions/' . $sessionId . '/manual');
+    }
+
+    // Check already attended
+    $exists = $this->db->single(
+        "SELECT id FROM attendance WHERE session_id = ? AND student_id = ?",
+        [$sessionId, $student['id']]
+    );
+    if ($exists) {
+        $this->flash('error', htmlspecialchars($student['name']) . ' has already been marked present.');
+        $this->redirect('/lecturer/sessions/' . $sessionId . '/manual');
+    }
+
+    // Check if class rep exists — if yes, needs confirmation
+    $session  = $this->sessionService->getSessionWithDetails($sessionId);
+    $classRep = $this->db->single(
+        "SELECT id FROM enrollments WHERE course_id = ? AND is_class_rep = 1",
+        [$session['course_id']]
+    );
+
+    if ($classRep) {
+        // Create pending manual request
+        $this->db->insert(
+            "INSERT INTO manual_attendance (session_id, student_id, reg_number, status, created_at)
+             VALUES (?, ?, ?, 'pending', NOW())",
+            [$sessionId, $student['id'], $regNo]
+        );
+        $this->flash('success', htmlspecialchars($student['name']) . ' — pending class rep confirmation.');
+    } else {
+        // No class rep — record directly
+        $this->db->insert(
+            "INSERT INTO attendance (session_id, student_id, status, ip_address, device_info)
+             VALUES (?, ?, 'present', 'manual', 'Manual entry by lecturer')",
+            [$sessionId, $student['id']]
+        );
+        $this->flash('success', 'Attendance recorded for ' . htmlspecialchars($student['name']));
+    }
+
+    $this->redirect('/lecturer/sessions/' . $sessionId . '/manual');
+}
 }

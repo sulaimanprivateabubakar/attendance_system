@@ -36,45 +36,73 @@
     </div>
 
     <!-- Enrolled Students -->
-    <div class="panel">
-        <div class="panel-header">
-            <h2><i class="fas fa-users" style="color:var(--primary);margin-right:8px"></i>Enrolled Students</h2>
-            <span class="badge badge-count"><?= count($enrolled) ?></span>
-        </div>
-        <div class="table-wrap">
-            <?php if (empty($enrolled)): ?>
-            <div class="empty-state">
-                <div class="empty-icon">👥</div>
-                <p>No students enrolled yet.</p>
-            </div>
-            <?php else: ?>
-            <table class="table">
-                <thead>
-                    <tr><th>#</th><th>Name</th><th>Student No.</th><th>Email</th><th>Enrolled</th></tr>
-                </thead>
-                <tbody>
-                <?php foreach ($enrolled as $i => $s): ?>
-                    <tr>
-                        <td><?= $i + 1 ?></td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:10px">
-                                <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:#fff;flex-shrink:0">
-                                    <?= strtoupper(substr($s['name'],0,2)) ?>
-                                </div>
-                                <strong><?= htmlspecialchars($s['name']) ?></strong>
-                            </div>
-                        </td>
-                        <td><code style="font-size:.78rem;color:var(--text-muted)"><?= htmlspecialchars($s['student_number']) ?></code></td>
-                        <td style="color:var(--text-muted)"><?= htmlspecialchars($s['email']) ?></td>
-                        <td style="color:var(--text-muted)"><?= date('M j, Y', strtotime($s['enrolled_at'])) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <?php endif; ?>
-        </div>
+<div class="table-wrap">
+    <?php if (empty($enrolled)): ?>
+    <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <p>No students enrolled yet.</p>
     </div>
-
+    <?php else: ?>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Reg No.</th>
+                <th>Email</th>
+                <th>Enrolled</th>
+                <th>Class Rep</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($enrolled as $i => $s): ?>
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div style="width:32px;height:32px;border-radius:8px;
+                                    background:linear-gradient(135deg,var(--primary),var(--primary-light));
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-weight:700;font-size:.72rem;color:#fff;flex-shrink:0">
+                            <?= strtoupper(substr($s['name'], 0, 2)) ?>
+                        </div>
+                        <strong><?= htmlspecialchars($s['name']) ?></strong>
+                    </div>
+                </td>
+                <td>
+                    <code style="font-size:.78rem;color:var(--text-muted);
+                                 background:rgba(255,255,255,.06);
+                                 padding:2px 8px;border-radius:6px">
+                        <?= htmlspecialchars($s['student_number']) ?>
+                    </code>
+                </td>
+                <td style="color:var(--text-muted)"><?= htmlspecialchars($s['email']) ?></td>
+                <td style="color:var(--text-muted)">
+                    <?= date('M j, Y', strtotime($s['enrolled_at'])) ?>
+                </td>
+                <td>
+                    <?php $isRep = !empty($s['is_class_rep']) && $s['is_class_rep'] == 1; ?>
+                    <?php if ($isRep): ?>
+                        <span class="badge badge-active">
+                            ⭐ Class Rep
+                        </span>
+                    <?php else: ?>
+                        <form method="POST"
+                              action="<?= BASE_URL ?>/admin/courses/<?= $course['id'] ?>/set-rep"
+                              style="display:inline">
+                            <input type="hidden" name="_csrf"      value="<?= Auth::generateCsrfToken() ?>">
+                            <input type="hidden" name="student_id" value="<?= $s['id'] ?>">
+                            <button type="submit" class="btn btn-sm btn-secondary">
+                                Set as Rep
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
 </div>
 
 <script>

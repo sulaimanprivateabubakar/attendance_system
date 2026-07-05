@@ -839,6 +839,24 @@ SCAN PAGE
     grid-template-columns: 380px 1fr;
     gap: 22px;
     align-items: start;
+    width: 100%;
+}
+
+.qr-panel {
+    min-width: 0;
+    width: 100%;
+}
+
+.attendance-panel {
+    min-width: 0;
+    width: 100%;
+    height: fit-content;
+}
+.page-content {
+    padding: 32px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: hidden;
 }
 
 .qr-panel, .attendance-panel {
@@ -1498,3 +1516,53 @@ UTILITY
 .fw-600  { font-weight: 600; }
 .text-center { text-align: center; }
 .hidden  { display: none; }
+
+/*==========================================================
+RESIZABLE SIDEBAR
+==========================================================*/
+
+.sidebar-resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background: transparent;
+    transition: background .2s;
+    z-index: 10;
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle.dragging {
+    background: var(--primary);
+}
+
+.sidebar { position: fixed; }
+
+.sidebar-collapsed .sidebar-section-label,
+.sidebar-collapsed .sidebar-user-info,
+.sidebar-collapsed span:not(.sidebar-logo-icon) {
+    display: none;
+}
+
+.sidebar-collapsed .sidebar-logo {
+    justify-content: center;
+    padding: 20px 12px;
+}
+
+.sidebar-collapsed .sidebar a {
+    justify-content: center;
+    padding: 12px;
+}
+
+.sidebar-collapsed .sidebar a span { display: none; }
+
+.sidebar-collapsed .sidebar-footer {
+    padding: 12px 8px;
+}
+
+.sidebar-collapsed .sidebar-user {
+    justify-content: center;
+    padding: 10px;
+}
