@@ -3,7 +3,7 @@
 <div class="page-title">
     <div>
         <h1>My Dashboard</h1>
-        <p>Welcome back, <?= htmlspecialchars($user['name']) ?> 👋</p>
+        <p>Welcome back, <?= htmlspecialchars($user['name']) ?></p>
     </div>
     <?php if (!empty($isClassRep)): ?>
     <span class="badge" style="background:rgba(245,158,11,.2);color:var(--warning);

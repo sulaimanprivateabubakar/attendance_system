@@ -202,6 +202,25 @@ class ClaimController extends Controller
         ]);
     }
 
+    // GET /admin/claims/:id
+public function adminView(array $params): void
+{
+    $claim = $this->getClaim((int)$params['id']);
+    $data  = $this->getClaimData($claim);
+
+    $this->view('admin/claim_view', [
+        'user'         => Auth::user(),
+        'claim'        => $claim,
+        'data'         => $data,
+        'courses'      => $data['courses'],
+        'totalHours'   => $data['totalHours'],
+        'totalAmount'  => $data['totalAmount'],
+        'totalStudents'=> $data['totalStudents'],
+        'monthLabel'   => $data['monthLabel'],
+        'csrf'         => Auth::generateCsrfToken(),
+        'flash'        => $this->getFlash(),
+    ]);
+}
     // POST /admin/claims/:id/approve
     public function approve(array $params): void
     {

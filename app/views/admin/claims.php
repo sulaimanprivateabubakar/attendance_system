@@ -99,33 +99,37 @@
                         <?= $c['submitted_at'] ? date('M j, Y', strtotime($c['submitted_at'])) : '—' ?>
                     </td>
                     <td>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap">
-                            <a href="<?= BASE_URL ?>/lecturer/claims/<?= $c['id'] ?>/print"
-                               target="_blank" class="btn btn-sm btn-secondary">
-                                <i class="fas fa-print"></i>
-                            </a>
-                            <?php if ($c['status'] === 'submitted'): ?>
-                            <form method="POST"
-                                  action="<?= BASE_URL ?>/admin/claims/<?= $c['id'] ?>/approve"
-                                  style="display:inline">
-                                <input type="hidden" name="_csrf" value="<?= Auth::generateCsrfToken() ?>">
-                                <button class="btn btn-sm btn-success"
-                                        onclick="return confirm('Approve this claim?')">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            </form>
-                            <form method="POST"
-                                  action="<?= BASE_URL ?>/admin/claims/<?= $c['id'] ?>/reject"
-                                  style="display:inline">
-                                <input type="hidden" name="_csrf" value="<?= Auth::generateCsrfToken() ?>">
-                                <button class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Reject this claim?')">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </form>
-                            <?php endif; ?>
-                        </div>
-                    </td>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a href="<?= BASE_URL ?>/admin/claims/<?= $c['id'] ?>"
+           class="btn btn-sm btn-primary">
+            <i class="fas fa-eye"></i> View
+        </a>
+        <a href="<?= BASE_URL ?>/lecturer/claims/<?= $c['id'] ?>/print"
+           target="_blank" class="btn btn-sm btn-secondary">
+            <i class="fas fa-print"></i>
+        </a>
+        <?php if ($c['status'] === 'submitted'): ?>
+        <form method="POST"
+              action="<?= BASE_URL ?>/admin/claims/<?= $c['id'] ?>/approve"
+              style="display:inline">
+            <input type="hidden" name="_csrf" value="<?= Auth::generateCsrfToken() ?>">
+            <button class="btn btn-sm btn-success"
+                    onclick="return confirm('Approve this claim?')">
+                <i class="fas fa-check"></i>
+            </button>
+        </form>
+        <form method="POST"
+              action="<?= BASE_URL ?>/admin/claims/<?= $c['id'] ?>/reject"
+              style="display:inline">
+            <input type="hidden" name="_csrf" value="<?= Auth::generateCsrfToken() ?>">
+            <button class="btn btn-sm btn-danger"
+                    onclick="return confirm('Reject this claim?')">
+                <i class="fas fa-times"></i>
+            </button>
+        </form>
+        <?php endif; ?>
+    </div>
+</td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
