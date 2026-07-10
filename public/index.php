@@ -114,6 +114,10 @@ $router->get( '/admin/reports/export',         'AdminController@exportReport',  
 $router->get( '/admin/claims',             'ClaimController@adminIndex', ['auth','role:admin']);
 $router->post('/admin/claims/:id/approve', 'ClaimController@approve',    ['auth','role:admin']);
 $router->post('/admin/claims/:id/reject',  'ClaimController@reject',     ['auth','role:admin']);
+$router->get( '/admin/claims',             'ClaimController@adminIndex', ['auth','role:admin']);
+$router->get( '/admin/claims/:id',         'ClaimController@adminView',  ['auth','role:admin']);
+$router->post('/admin/claims/:id/approve', 'ClaimController@approve',    ['auth','role:admin']);
+$router->post('/admin/claims/:id/reject',  'ClaimController@reject',     ['auth','role:admin']);
 
 // ── DISPATCH — must be last ───────────────────────────────────────────────────
 $router->dispatch();
