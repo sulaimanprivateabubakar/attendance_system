@@ -17,15 +17,15 @@ THEME VARIABLES
     --warning: #f59e0b;
     --danger:  #ef4444;
     --info:    #06b6d4;
-    --bg:      #0f172a;
-    --bg2:     #111827;
-    --card:    #1e293b;
-    --sidebar: #111827;
+    --bg:      #000000;
+    --bg2:     #0a0a0a;
+    --card:    #111111;
+    --sidebar: #0d0d0d;
     --text:       #ffffff;
-    --text-light: #94a3b8;
-    --text-muted: #64748b;
-    --border:  #334155;
-    --shadow:  0 15px 40px rgba(0,0,0,.35);
+    --text-light: #a0a0a0;
+    --text-muted: #606060;
+    --border:  #222222;
+    --shadow:  0 15px 40px rgba(0,0,0,.6);
     --radius:  18px;
     --transition: .3s ease;
 }
@@ -1565,4 +1565,46 @@ RESIZABLE SIDEBAR
 .sidebar-collapsed .sidebar-user {
     justify-content: center;
     padding: 10px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #777;
+    font-size: 16px;
+}
+
+.toggle-password:hover {
+    color: var(--primary);
+}
+
+.forgot-password {
+    text-align: right;
+    margin-top: 8px;
+}
+
+.forgot-password a {
+    font-size: 0.85rem;
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-password a:hover {
+    color: var(--primary);
+    text-decoration: underline;
 }

@@ -14,34 +14,49 @@
     </div>
     <?php endif; ?>
 
-    <form method="POST" action="<?= BASE_URL ?>/login" class="form">
-        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
+<form method="POST" action="<?= BASE_URL ?>/login" class="form">
+    <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
 
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required
-                   autocomplete="email" placeholder="you@university.edu"
-                   value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+    <!-- Email -->
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email"
+               id="email"
+               name="email"
+               required
+               autocomplete="email"
+               placeholder="you@university.edu"
+               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+        <label for="password">Password</label>
+
+        <div class="password-wrapper">
+            <input type="password"
+                   id="password"
+                   name="password"
+                   required
+                   autocomplete="current-password"
+                   placeholder="Password">
+
+            <button type="button" id="togglePassword" class="toggle-password">
+                <i class="fas fa-eye"></i>
+            </button>
         </div>
 
-        <div class="form-group">
-            <label style="display:flex;justify-content:space-between;text-transform:none;letter-spacing:0">
-                <span style="text-transform:uppercase;letter-spacing:.06em;font-size:.75rem">Password</span>
-                <a href="<?= BASE_URL ?>/forgot-password" style="font-size:.78rem;color:var(--primary-light);font-weight:500">
-                    Forgot password?
-                </a>
-            </label>
-            <input type="password" id="password" name="password" required
-                   autocomplete="current-password" placeholder="Password">
+        <div class="forgot-password">
+            <a href="<?= BASE_URL ?>/forgot-password">Forgot password?</a>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">
-            <i class="fas fa-sign-in-alt"></i> Sign In
-        </button>
-    </form>
-
+    <!-- Login Button -->
+    <button type="submit" class="btn btn-primary btn-full">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+    </button>
+</form>
     <p class="auth-footer">
-        Don't have an account?
-        <a href="<?= BASE_URL ?>/register">Register as student</a>
+        Striving For Excellence
     </p>
 </div>
