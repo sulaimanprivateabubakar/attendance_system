@@ -8,11 +8,7 @@
     <h1>IQRA'A e-ATTENDANCE</h1>
     <h2>Sign in to your account</h2>
 
-    <?php if (!empty($flash)): ?>
-    <div class="alert alert-<?= $flash['type'] ?>">
-        <?= htmlspecialchars($flash['message']) ?>
-    </div>
-    <?php endif; ?>
+   
 
 <form method="POST" action="<?= BASE_URL ?>/login" class="form">
     <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf) ?>">
