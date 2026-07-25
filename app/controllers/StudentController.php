@@ -6,17 +6,19 @@ class StudentController extends Controller
     private int $studentId;   // students.id (not users.id)
 
     public function __construct()
-    {
-        parent::__construct();
+{
+    parent::__construct();
 
-        $student = $this->db->single(
-            "SELECT id FROM students WHERE user_id = ?", [Auth::id()]
-        );
-        $this->studentId = $student['id'] ?? 0;
-    }
+    $student = $this->db->single(
+        "SELECT id FROM students WHERE user_id = ?", [Auth::id()]
+    );
+    $this->studentId = $student['id'] ?? 0;
+
+    error_log('StudentController: user_id=' . Auth::id() . ' student_id=' . $this->studentId);
+}
 
     // GET /student/dashboard
- public function dashboard(): void
+public function dashboard(): void
 {
     // Enrolled courses with stats
     $courses = $this->db->all(
@@ -49,7 +51,7 @@ class StudentController extends Controller
         [$this->studentId]
     );
 
-    // Check if this student is a class rep
+    // Check if this student is a class rep for ANY course
     $isClassRep = $this->db->single(
         "SELECT e.id, e.course_id, c.name AS course_name, c.code AS course_code
            FROM enrollments e
@@ -59,28 +61,41 @@ class StudentController extends Controller
         [$this->studentId]
     );
 
+    // Debug — log what we found
+    error_log('Class rep check for student ' . $this->studentId . ': ' . json_encode($isClassRep));
+
     // Get pending manual confirmations if class rep
-    $pendingConfirmations = [];
-    if ($isClassRep) {
-        $pendingConfirmations = $this->db->all(
-            "SELECT ma.id, ma.reg_number, ma.created_at, ma.status,
-                    u.name  AS student_name,
-                    s.student_number,
-                    sess.session_date,
-                    sess.id AS session_id,
-                    c.name  AS course_name,
-                    c.code  AS course_code
-               FROM manual_attendance ma
-               JOIN students s    ON s.id    = ma.student_id
-               JOIN users    u    ON u.id    = s.user_id
-               JOIN sessions sess ON sess.id = ma.session_id
-               JOIN courses  c    ON c.id    = sess.course_id
-              WHERE ma.status     = 'pending'
-                AND sess.course_id = ?
-              ORDER BY ma.created_at ASC",
-            [$isClassRep['course_id']]
-        );
-    }
+$pendingConfirmations = [];
+if ($isClassRep) {
+    // Get ALL pending manual attendance across all sessions
+    // not just sessions matching course_id directly
+    $pendingConfirmations = $this->db->all(
+        "SELECT ma.id,
+                ma.reg_number,
+                ma.created_at,
+                ma.status,
+                u.name         AS student_name,
+                s.student_number,
+                sess.session_date,
+                sess.id        AS session_id,
+                c.name         AS course_name,
+                c.code         AS course_code
+           FROM manual_attendance ma
+           JOIN students  s    ON s.id    = ma.student_id
+           JOIN users     u    ON u.id    = s.user_id
+           JOIN sessions  sess ON sess.id = ma.session_id
+           JOIN courses   c    ON c.id    = sess.course_id
+           JOIN enrollments e  ON e.course_id = sess.course_id
+                               AND e.student_id = ?
+                               AND e.is_class_rep = 1
+          WHERE ma.status = 'pending'
+          ORDER BY ma.created_at ASC",
+        [$this->studentId]
+    );
+}
+
+        error_log('Pending confirmations: ' . json_encode($pendingConfirmations));
+
 
     $this->view('student/dashboard', [
         'user'                 => Auth::user(),
@@ -91,8 +106,6 @@ class StudentController extends Controller
         'flash'                => $this->getFlash(),
     ]);
 }
-
-
 
     // GET /student/courses/:id
     public function courseDetail(array $params): void
@@ -177,5 +190,83 @@ public function confirmAttendance(array $params): void
     }
 
     $this->redirect('/student/dashboard');
+}
+
+
+// GET /student/rep-dashboard
+public function repDashboard(): void
+{
+    // Verify is class rep
+    $isClassRep = $this->db->single(
+        "SELECT e.id, e.course_id, c.name AS course_name, c.code AS course_code
+           FROM enrollments e
+           JOIN courses c ON c.id = e.course_id
+          WHERE e.student_id = ? AND e.is_class_rep = 1
+          LIMIT 1",
+        [$this->studentId]
+    );
+
+    if (!$isClassRep) {
+        $this->flash('error', 'You are not assigned as a class rep.');
+        $this->redirect('/student/dashboard');
+    }
+
+    // All pending
+    $pending = $this->db->all(
+        "SELECT ma.id,
+                ma.reg_number,
+                ma.created_at,
+                ma.status,
+                u.name         AS student_name,
+                s.student_number,
+                sess.session_date,
+                sess.start_time,
+                sess.id        AS session_id,
+                c.name         AS course_name,
+                c.code         AS course_code
+           FROM manual_attendance ma
+           JOIN students  s    ON s.id    = ma.student_id
+           JOIN users     u    ON u.id    = s.user_id
+           JOIN sessions  sess ON sess.id = ma.session_id
+           JOIN courses   c    ON c.id    = sess.course_id
+           JOIN enrollments e  ON e.course_id = sess.course_id
+                               AND e.student_id = ?
+                               AND e.is_class_rep = 1
+          WHERE ma.status = 'pending'
+          ORDER BY ma.created_at ASC",
+        [$this->studentId]
+    );
+
+    // Confirmed today
+    $confirmedToday = $this->db->all(
+        "SELECT ma.id,
+                ma.reg_number,
+                ma.created_at,
+                u.name AS student_name,
+                s.student_number,
+                c.code AS course_code,
+                sess.session_date
+           FROM manual_attendance ma
+           JOIN students  s    ON s.id    = ma.student_id
+           JOIN users     u    ON u.id    = s.user_id
+           JOIN sessions  sess ON sess.id = ma.session_id
+           JOIN courses   c    ON c.id    = sess.course_id
+           JOIN enrollments e  ON e.course_id = sess.course_id
+                               AND e.student_id = ?
+                               AND e.is_class_rep = 1
+          WHERE ma.status IN ('confirmed','rejected')
+            AND DATE(ma.created_at) = CURDATE()
+          ORDER BY ma.created_at DESC",
+        [$this->studentId]
+    );
+
+    $this->view('student/rep_dashboard', [
+        'user'           => Auth::user(),
+        'isClassRep'     => $isClassRep,
+        'pending'        => $pending,
+        'confirmedToday' => $confirmedToday,
+        'csrf'           => Auth::generateCsrfToken(),
+        'flash'          => $this->getFlash(),
+    ]);
 }
 }

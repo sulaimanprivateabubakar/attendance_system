@@ -72,14 +72,53 @@
     <div class="sidebar-section-label">Analytics</div>
 </div>
         <?php elseif (Auth::isStudent()): ?>
-        <div class="sidebar-section">
-            <div class="sidebar-section-label">Main</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/student/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
-            </ul>
-        </div>
-        <?php endif; ?>
-
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/student/dashboard">
+            <i class="fas fa-th-large"></i> Dashboard</a></li>
+    </ul>
+</div>
+<?php
+// Check if student is class rep
+$db = Database::getInstance();
+$studentRec = $db->single("SELECT id FROM students WHERE user_id = ?", [Auth::id()]);
+$studentIdForSidebar = $studentRec['id'] ?? 0;
+$isRepCheck = $studentIdForSidebar ? $db->single(
+    "SELECT id FROM enrollments WHERE student_id = ? AND is_class_rep = 1 LIMIT 1",
+    [$studentIdForSidebar]
+) : null;
+if ($isRepCheck):
+?>
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Class Rep</div>
+    <ul>
+        <li>
+            <a href="<?= BASE_URL ?>/student/rep-dashboard">
+                <i class="fas fa-user-shield"></i> Rep Dashboard
+                <?php
+                $pendingCount = $db->scalar(
+                    "SELECT COUNT(*) FROM manual_attendance ma
+                       JOIN sessions sess ON sess.id = ma.session_id
+                       JOIN enrollments e ON e.course_id = sess.course_id
+                          AND e.student_id = ? AND e.is_class_rep = 1
+                      WHERE ma.status = 'pending'",
+                    [$studentIdForSidebar]
+                );
+                if ($pendingCount > 0): ?>
+                <span style="background:var(--danger);color:#fff;
+                             border-radius:99px;padding:1px 7px;
+                             font-size:.68rem;font-weight:700;
+                             margin-left:auto">
+                    <?= $pendingCount ?>
+                </span>
+                <?php endif; ?>
+            </a>
+        </li>
+    </ul>
+</div>
+<?php endif; ?>
+<?php endif; ?>
         <div class="sidebar-section">
             <div class="sidebar-section-label">Account</div>
             <ul>
