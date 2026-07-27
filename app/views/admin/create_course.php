@@ -57,14 +57,6 @@
                 </select>
             </div>
         
-            <div class="form-row">
-    <div class="form-group">
-        <label>Semester</label>
-        <select name="semester">
-            <option value="1">Semester 1</option>
-            <option value="2">Semester 2</option>
-        </select>
-    </div>
     <div class="form-group">
         <label>Year of Study</label>
         <select name="year_of_study">
@@ -80,11 +72,7 @@
         <input type="number" name="credit_hours" value="3" min="1" max="6">
     </div>
 </div>
-            <div class="form-group">
-                <label>Credit Hours</label>
-                <input type="number" name="credit_hours" value="3" min="1" max="6">
-            </div>
-        </div>
+
 
         <div class="form-group">
             <label>Academic Year</label>
