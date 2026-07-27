@@ -56,6 +56,30 @@
                     <option value="2">Semester 2</option>
                 </select>
             </div>
+        
+            <div class="form-row">
+    <div class="form-group">
+        <label>Semester</label>
+        <select name="semester">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Year of Study</label>
+        <select name="year_of_study">
+            <option value="">— All Years —</option>
+            <option value="1">Year 1</option>
+            <option value="2">Year 2</option>
+            <option value="3">Year 3</option>
+            <option value="4">Year 4</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Credit Hours</label>
+        <input type="number" name="credit_hours" value="3" min="1" max="6">
+    </div>
+</div>
             <div class="form-group">
                 <label>Credit Hours</label>
                 <input type="number" name="credit_hours" value="3" min="1" max="6">

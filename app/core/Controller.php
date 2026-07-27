@@ -93,12 +93,23 @@ protected function redirect(string $path): void
 
     // ── CSRF ─────────────────────────────────────────────────────────────────
 
- protected function validateCsrf(): void
+protected function validateCsrf(): void
 {
-    $token = $this->post('_csrf') ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    $token = $_POST['_csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    
+    // For file uploads, also check raw input
+    if (empty($token)) {
+        $token = $_REQUEST['_csrf'] ?? '';
+    }
+    
     if (!Auth::verifyCsrfToken($token)) {
-        http_response_code(419);
-        die('CSRF token mismatch.');
+        // Regenerate token and redirect back
+        $referer = $_SERVER['HTTP_REFERER'] ?? '/';
+        $base    = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+        $path    = str_replace($base, '', $referer);
+        $_SESSION['csrf_error'] = 'Session expired. Please try again.';
+        header('Location: ' . $referer);
+        exit;
     }
 }
 }

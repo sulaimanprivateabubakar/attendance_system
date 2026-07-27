@@ -198,18 +198,19 @@ class AdminController extends Controller
         $this->validateCsrf();
 
         $this->db->insert(
-            "INSERT INTO courses (code, name, department_id, lecturer_id, credit_hours, semester, academic_year)
-             VALUES (?,?,?,?,?,?,?)",
-            [
-                strtoupper(trim($this->post('code',''))),
-                $this->clean($this->post('name','')),
-                $this->post('department_id') ?: null,
-                $this->post('lecturer_id')   ?: null,
-                (int)$this->post('credit_hours', 3),
-                (int)$this->post('semester', 1),
-                $this->clean($this->post('academic_year','')),
-            ]
-        );
+    "INSERT INTO courses (code, name, department_id, lecturer_id, credit_hours, semester, year_of_study, academic_year)
+     VALUES (?,?,?,?,?,?,?,?)",
+    [
+        strtoupper(trim($this->post('code',''))),
+        $this->clean($this->post('name','')),
+        $this->post('department_id') ?: null,
+        $this->post('lecturer_id')   ?: null,
+        (int)$this->post('credit_hours', 3),
+        (int)$this->post('semester', 1),
+        $this->post('year_of_study') ?: null,
+        $this->clean($this->post('academic_year','')),
+    ]
+);
 
         $this->flash('success', 'Course created.');
         $this->redirect('/admin/courses');

@@ -52,6 +52,19 @@
     </ul>
 </div>
 
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Management</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/admin/users">
+            <i class="fas fa-users"></i> Users</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/courses">
+            <i class="fas fa-book"></i> Courses</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/departments">
+            <i class="fas fa-building"></i> Departments</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/import">
+            <i class="fas fa-file-upload"></i> Bulk Import</a></li>
+    </ul>
+</div>
 
         <?php elseif (Auth::isLecturer()): ?>
 <div class="sidebar-section">

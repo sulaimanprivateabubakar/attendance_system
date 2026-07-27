@@ -20,12 +20,12 @@ class Auth
 
             session_name($name);
             session_set_cookie_params([
-                'lifetime' => $lifetime,
-                'path'     => '/',
-                'secure'   => ($_ENV['APP_ENV'] ?? 'development') === 'production',
-                'httponly' => true,
-                'samesite' => 'Lax',
-            ]);
+            'lifetime' => $lifetime,
+            'path'     => '/',
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
             session_start();
         }
     }

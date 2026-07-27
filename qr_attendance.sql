@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2026 at 10:25 PM
+-- Generation Time: Jul 27, 2026 at 11:59 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,7 +49,13 @@ INSERT INTO `attendance` (`id`, `session_id`, `student_id`, `scanned_at`, `ip_ad
 (4, 21, 4, '2026-07-04 08:38:19', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
 (5, 22, 3, '2026-07-04 21:41:04', 'manual', 'Manual entry by lecturer', 'present', NULL),
 (6, 23, 3, '2026-07-05 17:23:29', 'manual', 'Manual — confirmed by class rep', 'present', NULL),
-(7, 24, 4, '2026-07-06 13:51:10', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL);
+(7, 24, 4, '2026-07-06 13:51:10', '172.20.10.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/145.2  Mobile/15E148 Safari/604.1', 'late', NULL),
+(8, 26, 5, '2026-07-11 06:56:35', '10.79.172.132', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', 'late', NULL),
+(9, 26, 3, '2026-07-11 06:59:12', '10.79.172.132', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', 'late', NULL),
+(10, 27, 3, '2026-07-11 07:01:57', '10.79.172.132', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36', 'late', NULL),
+(11, 32, 3, '2026-07-25 11:57:27', '10.84.213.126', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36', 'late', NULL),
+(12, 27, 5, '2026-07-25 20:48:09', 'manual', 'Manual — confirmed by class rep', 'present', NULL),
+(13, 32, 5, '2026-07-25 20:48:12', 'manual', 'Manual — confirmed by class rep', 'present', NULL);
 
 -- --------------------------------------------------------
 
@@ -81,6 +87,7 @@ CREATE TABLE `courses` (
   `description` text DEFAULT NULL,
   `credit_hours` tinyint(3) UNSIGNED DEFAULT 3,
   `semester` tinyint(3) UNSIGNED DEFAULT NULL,
+  `year_of_study` tinyint(3) UNSIGNED DEFAULT NULL,
   `academic_year` varchar(10) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -90,10 +97,11 @@ CREATE TABLE `courses` (
 -- Dumping data for table `courses`
 --
 
-INSERT INTO `courses` (`id`, `department_id`, `lecturer_id`, `code`, `name`, `description`, `credit_hours`, `semester`, `academic_year`, `is_active`, `created_at`) VALUES
-(1, 2, NULL, 'ITIL', 'Introduction in Information Systems', NULL, 2, 2, '2023/2024', 1, '2026-06-30 07:31:44'),
-(2, 1, 2, 'ITST', 'Statistics', NULL, 3, 2, '2023/2024', 1, '2026-06-30 20:11:02'),
-(3, 3, 3, 'IB', 'Introduction in Business', NULL, 3, 1, '2023/2024', 1, '2026-07-04 08:34:37');
+INSERT INTO `courses` (`id`, `department_id`, `lecturer_id`, `code`, `name`, `description`, `credit_hours`, `semester`, `year_of_study`, `academic_year`, `is_active`, `created_at`) VALUES
+(1, 2, NULL, 'ITIL', 'Introduction in Information Systems', NULL, 2, 2, NULL, '2023/2024', 1, '2026-06-30 07:31:44'),
+(2, 1, 2, 'ITST', 'Statistics', NULL, 3, 2, NULL, '2023/2024', 1, '2026-06-30 20:11:02'),
+(3, 3, 3, 'IB', 'Introduction in Business', NULL, 3, 1, NULL, '2023/2024', 1, '2026-07-04 08:34:37'),
+(4, 2, 2, 'PG', 'Programming', NULL, 2, 2, NULL, '2023/2024', 1, '2026-07-11 06:49:44');
 
 -- --------------------------------------------------------
 
@@ -115,7 +123,8 @@ CREATE TABLE `departments` (
 INSERT INTO `departments` (`id`, `name`, `code`, `created_at`) VALUES
 (1, 'Computer Science', 'CS', '2026-06-29 09:31:08'),
 (2, 'Information Technology', 'IT', '2026-06-29 09:31:08'),
-(3, 'Business Administration', 'BA', '2026-06-29 09:31:08');
+(3, 'Business Administration', 'BA', '2026-06-29 09:31:08'),
+(4, 'Public healthy', 'PH', '2026-07-11 06:46:59');
 
 -- --------------------------------------------------------
 
@@ -138,7 +147,40 @@ CREATE TABLE `enrollments` (
 INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrolled_at`, `is_class_rep`) VALUES
 (3, 3, 1, '2026-06-30 20:08:25', 0),
 (4, 3, 2, '2026-06-30 20:11:19', 1),
-(5, 4, 3, '2026-07-04 08:37:11', 1);
+(5, 4, 3, '2026-07-04 08:37:11', 1),
+(6, 5, 1, '2026-07-11 06:46:19', 0),
+(7, 3, 4, '2026-07-11 06:55:54', 1),
+(8, 5, 4, '2026-07-11 06:55:59', 0),
+(9, 6, 4, '2026-07-23 09:03:20', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `import_logs`
+--
+
+CREATE TABLE `import_logs` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `type` enum('students','lecturers','courses','enrollments') NOT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  `total_rows` int(11) DEFAULT 0,
+  `success` int(11) DEFAULT 0,
+  `failed` int(11) DEFAULT 0,
+  `errors` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `import_logs`
+--
+
+INSERT INTO `import_logs` (`id`, `user_id`, `type`, `filename`, `total_rows`, `success`, `failed`, `errors`, `created_at`) VALUES
+(1, 2, 'students', 'students_template.csv', 4, 4, 0, NULL, '2026-07-27 21:22:44'),
+(2, 2, 'students', 'students_import_template.csv', 4, 0, 4, 'Row 2: Reg number \'2024/CS/001\' already exists — skipped\nRow 3: Reg number \'2024/CS/002\' already exists — skipped\nRow 4: Reg number \'2024/IT/001\' already exists — skipped\nRow 5: Reg number \'2024/BA/001\' already exists — skipped', '2026-07-27 21:48:53'),
+(3, 2, 'students', 'students_import_template.csv', 4, 0, 4, 'Row 2: Reg number \'2024/CS/001\' already exists — skipped\nRow 3: Reg number \'2024/CS/002\' already exists — skipped\nRow 4: Reg number \'2024/IT/001\' already exists — skipped\nRow 5: Reg number \'2024/BA/001\' already exists — skipped', '2026-07-27 21:50:19'),
+(4, 2, 'students', 'students_import_template.csv', 4, 0, 4, 'Row 2: Reg number \'2024/CS/001\' already exists — skipped\nRow 3: Reg number \'2024/CS/002\' already exists — skipped\nRow 4: Reg number \'2024/IT/001\' already exists — skipped\nRow 5: Reg number \'2024/BA/001\' already exists — skipped', '2026-07-27 21:51:40'),
+(5, 2, 'students', 'students_import_template.csv', 4, 4, 0, 'Row 2: \'Abdul Razack\' added but NO matching courses found for Dept=CS Year=1 Sem=1\nRow 3: \'Asiya Hanif\' added but NO matching courses found for Dept=CS Year=1 Sem=1\nRow 4: \'Ren Chirwa\' added but NO matching courses found for Dept=IT Year=2 Sem=1\nRow 5: \'Jannah saeed\' added but NO matching courses found for Dept=BA Year=1 Sem=2', '2026-07-27 21:52:47');
 
 -- --------------------------------------------------------
 
@@ -161,7 +203,8 @@ CREATE TABLE `lecturers` (
 
 INSERT INTO `lecturers` (`id`, `user_id`, `department_id`, `staff_number`, `phone`, `created_at`) VALUES
 (2, 6, 2, 'STF-97264E', NULL, '2026-06-30 20:06:43'),
-(3, 9, 3, 'STF-A790AD', NULL, '2026-07-04 08:32:36');
+(3, 9, 3, 'STF-A790AD', NULL, '2026-07-04 08:32:36'),
+(4, 12, 2, '4', NULL, '2026-07-23 13:11:58');
 
 -- --------------------------------------------------------
 
@@ -183,7 +226,9 @@ CREATE TABLE `manual_attendance` (
 --
 
 INSERT INTO `manual_attendance` (`id`, `session_id`, `student_id`, `reg_number`, `status`, `created_at`) VALUES
-(1, 23, 3, 'STU-978313ED', 'confirmed', '2026-07-04 21:53:40');
+(1, 23, 3, 'STU-978313ED', 'confirmed', '2026-07-04 21:53:40'),
+(2, 27, 5, 'ICBM/ICT/BXIBW2', 'confirmed', '2026-07-11 07:02:11'),
+(3, 32, 5, 'ICBM/ICT/BXIBW2', 'confirmed', '2026-07-25 20:09:01');
 
 -- --------------------------------------------------------
 
@@ -199,6 +244,14 @@ CREATE TABLE `password_resets` (
   `used` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `password_resets`
+--
+
+INSERT INTO `password_resets` (`id`, `user_id`, `token`, `expires_at`, `used`, `created_at`) VALUES
+(1, 10, '9df85b8c37242f90e9f9d9f9a8ebc4d5440686d66a1b110a77ab847b6871612c', '2026-07-22 20:15:34', 1, '2026-07-22 20:15:17'),
+(2, 10, '15c976f8770e4100cb7bce644f5ef142576b91cfb68b97a9bdbcf777d712e46d', '2026-07-22 21:15:34', 0, '2026-07-22 20:15:34');
 
 -- --------------------------------------------------------
 
@@ -271,8 +324,16 @@ INSERT INTO `sessions` (`id`, `course_id`, `lecturer_id`, `title`, `session_date
 (20, 2, 2, 'week 19', '2026-07-03', '08:00:00', '10:00:00', 'd3ca49347e7c1b9bc47d1926e0abfe79741c7be52e47c5475a01afda1c8abf11', '2026-07-03 22:39:53', NULL, 'closed', '2026-07-03 20:39:53'),
 (21, 3, 3, 'week 4', '2026-07-04', '08:00:00', '10:00:00', '857226c8e61bfb00de257bb415c51156a1d48cdcdcc84e9dce557c3a7fe49cac', '2026-07-04 10:35:23', NULL, 'closed', '2026-07-04 08:35:23'),
 (22, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', '726edf5da5d3d70a1028af6559899f8fa519dc786edd0c1d8fd2f45db837a62a', '2026-07-04 13:38:38', NULL, 'closed', '2026-07-04 11:38:38'),
-(23, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', 'dfbe19db489e7c40f752fc1d059ae6d4bc0303125522a924359a5f883c062863', '2026-07-04 23:53:14', NULL, 'active', '2026-07-04 21:53:14'),
-(24, 3, 3, 'week 3', '2026-07-06', '08:00:00', '10:00:00', '1d16eba88be12ac9197a2f6c67006c62c186fd38b2f3e62819dd108cf72b7d87', '2026-07-06 15:50:16', NULL, 'closed', '2026-07-06 13:50:16');
+(23, 2, 2, 'Week 20', '2026-07-04', '08:00:00', '10:00:00', 'dfbe19db489e7c40f752fc1d059ae6d4bc0303125522a924359a5f883c062863', '2026-07-04 23:53:14', NULL, 'closed', '2026-07-04 21:53:14'),
+(24, 3, 3, 'week 3', '2026-07-06', '08:00:00', '10:00:00', '1d16eba88be12ac9197a2f6c67006c62c186fd38b2f3e62819dd108cf72b7d87', '2026-07-06 15:50:16', NULL, 'closed', '2026-07-06 13:50:16'),
+(25, 4, 2, 'week 1', '2026-07-11', '08:00:00', '10:00:00', '01de01945ad879495354d9f76047da7542baef5b88db4ce885b16172da30d31d', '2026-07-11 08:51:07', NULL, 'pending', '2026-07-11 06:51:07'),
+(26, 4, 2, 'week 1', '2026-07-11', '08:00:00', '10:00:00', '56b205aafb6787cc725a123b6807ab8b29ad975af675b22984704a32c6775ef6', '2026-07-11 08:52:18', NULL, 'closed', '2026-07-11 06:52:18'),
+(27, 4, 2, 'week 2', '2026-07-11', '08:00:00', '10:00:00', '60ea458780ff47466317eeb6395e33d437bdb680fe627d81feba04162e004198', '2026-07-11 09:01:42', NULL, 'closed', '2026-07-11 07:01:42'),
+(28, 4, 2, 'week 2', '2026-07-23', '08:00:00', '10:00:00', '6d64d23583716b17e919a3c50defbbf1e344de44514354fd54fee3e843c4522b', '2026-07-23 10:00:39', NULL, 'closed', '2026-07-23 08:00:39'),
+(29, 4, 2, 'week 5', '2026-07-23', '08:00:00', '10:00:00', 'd8fe48b98f6a9027ec42aa1bbb858bb30478c7d773600217eb5e502937d60b73', '2026-07-23 11:05:46', NULL, 'closed', '2026-07-23 09:05:46'),
+(30, 4, 2, 'Week 5', '2026-07-23', '08:00:00', '10:00:00', 'a9fe1b6970b9d5719cb6e8bc8a2ecef5e95ae67334440dbbd82612ffce4dfc0e', '2026-07-23 14:36:37', NULL, 'closed', '2026-07-23 12:36:37'),
+(31, 4, 2, 'wee57', '2026-07-23', '08:00:00', '10:00:00', '98954b1932314b210c9a944f84b2f09c09dc9eca728c5f86eee7c55a517715a9', '2026-07-23 15:14:13', NULL, 'closed', '2026-07-23 13:14:13'),
+(32, 4, 2, 'week 29', '2026-07-25', '09:00:00', '10:00:00', '8d3bc3471905e502a023b6575722e9c9caf41b3db08c5dbd255393307d65a60e', '2026-07-25 13:55:52', NULL, 'active', '2026-07-25 11:55:52');
 
 -- --------------------------------------------------------
 
@@ -296,7 +357,17 @@ CREATE TABLE `students` (
 
 INSERT INTO `students` (`id`, `user_id`, `department_id`, `student_number`, `year_of_study`, `phone`, `created_at`) VALUES
 (3, 7, 2, 'STU-978313ED', NULL, NULL, '2026-06-30 20:07:22'),
-(4, 8, 3, 'STU-4773DF6D', NULL, NULL, '2026-07-04 08:31:16');
+(4, 8, 3, 'STU-4773DF6D', NULL, NULL, '2026-07-04 08:31:16'),
+(5, 10, 2, 'ICBM/ICT/BXIBW2', NULL, NULL, '2026-07-11 06:45:54'),
+(6, 11, 2, 'ICBM/ICT/BXIBW29', NULL, NULL, '2026-07-23 09:01:46'),
+(7, 13, 1, '2024/CS/001', 1, '2.65991E+11', '2026-07-27 21:22:44'),
+(8, 14, 1, '2024/CS/002', 1, '2.65881E+11', '2026-07-27 21:22:44'),
+(9, 15, 2, '2024/IT/001', 2, NULL, '2026-07-27 21:22:44'),
+(10, 16, 3, '2024/BA/001', 3, '2.65991E+11', '2026-07-27 21:22:44'),
+(11, 17, 1, '2024/CS/001324', 1, '2.66E+11', '2026-07-27 21:52:47'),
+(12, 18, 1, '2024/CS/002654', 1, NULL, '2026-07-27 21:52:47'),
+(13, 19, 2, '2024/IT/0010987', 2, '2.66E+11', '2026-07-27 21:52:47'),
+(14, 20, 3, '2024/BA/001194', 1, NULL, '2026-07-27 21:52:47');
 
 -- --------------------------------------------------------
 
@@ -324,7 +395,18 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `cr
 (6, 'Wilson Leman', 'wleman@gmail.com', '$2y$10$I09zmZ/JPrUn588fnfY3OOMu4cSugmH7YVw.g6tuVv640MSe2b4V2', 'lecturer', 1, '2026-06-30 20:06:43', '2026-06-30 20:06:43'),
 (7, 'Austin Phiri', 'austin@gmai.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-06-30 20:07:22'),
 (8, 'Ruqaya Frank', 'ruqaya@gmail.com', '$2y$10$zzdOCa8fJuNc0Y84H7gYz.mSBxtRGjYEerXOYH3FV4qJwWcHGj6Z2', 'student', 1, '2026-07-04 08:31:16', '2026-07-04 22:07:16'),
-(9, 'Barack Husen', 'barack@gmail.com', '$2y$10$DrW9vjznRrV/juK9ffH5TeBJxIi5ZzMsAOD/qbyJrUXnSjLb5VyWS', 'lecturer', 1, '2026-07-04 08:32:36', '2026-07-04 08:32:36');
+(9, 'Barack Husen', 'barack@gmail.com', '$2y$10$DrW9vjznRrV/juK9ffH5TeBJxIi5ZzMsAOD/qbyJrUXnSjLb5VyWS', 'lecturer', 1, '2026-07-04 08:32:36', '2026-07-04 08:32:36'),
+(10, 'suleman', 'sule@gmail.com', '$2y$10$eXQhaWfsDqPLxDTiEVhft.jWr9JgFtL8D2JtQtvU9MG6UPexohkVa', 'student', 1, '2026-07-11 06:45:54', '2026-07-11 06:45:54'),
+(11, 'Osman Belo', 'osman@gmail.com', '$2y$10$aPAvbeJEPPQTalzEPJh7uOnYIysmZXNi7pFR5DnP.LNJXKgt6iL9a', 'student', 1, '2026-07-23 09:01:46', '2026-07-23 09:01:46'),
+(12, 'Sulaiman Abubakar', 'sulaiman@gmail.com', '$2y$10$Yzpej.NHcBaHjCiAyCi6hOOthFEpGra6bkTt7/.DJOsq1k5xxjJM2', 'lecturer', 1, '2026-07-23 13:11:58', '2026-07-23 13:11:58'),
+(13, 'John Banda', 'john.banda@university.edu', '$2y$10$/3FalNoPriaUY.nDK9TNWedclwJk2xwDw5gDE91OkbwkXT5Vcnjdi', 'student', 1, '2026-07-27 21:22:44', '2026-07-27 21:22:44'),
+(14, 'Mary Phiri', 'mary.phiri@university.edu', '$2y$10$zVdK9MdnvI9LmXPVlzgC8elATntC7g4TE78eTeWDLHLv2gGT9Pr0q', 'student', 1, '2026-07-27 21:22:44', '2026-07-27 21:22:44'),
+(15, 'James Mwale', 'james.mwale@university.edu', '$2y$10$gcMHyhxBFL5YL9mYqnvIeOYGW5dLpy8IZLQ3ZixmwqDLtLcNVn4gO', 'student', 1, '2026-07-27 21:22:44', '2026-07-27 21:22:44'),
+(16, 'Sarah Chirwa', 'sarah.chirwa@university.edu', '$2y$10$lxDInST.QArjJVA9U98a.uwZIEzx3WOz6pFMGH0Nv/D.5aLNQpaxi', 'student', 1, '2026-07-27 21:22:44', '2026-07-27 21:22:44'),
+(17, 'Abdul Razack', 'abbdul@uni.edu', '$2y$10$SCVSdQ9MxSFj2jufn358u.LviQ53413C5efi0LPGyzOdm165i15Ba', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
+(18, 'Asiya Hanif', 'asiya@uni.edu', '$2y$10$drSm.cZUut02WuG9GIZh6uRSRmrMY3SV.t5htLsL9FCClbv2BtGLu', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
+(19, 'Ren Chirwa', 'renc@uni.edu', '$2y$10$gSdJz8Xy5z9Kmn7xB4anx.ugyhbCTwR7VN78uSQABcgMT2L.smwuu', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
+(20, 'Jannah saeed', 'janna@uni.edu', '$2y$10$iJKA71Ec7mqpEsAc.HhxbeqPfvIq.iyrWhNrPpzo6FeIBpJ42qg0m', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47');
 
 --
 -- Indexes for dumped tables
@@ -372,6 +454,13 @@ ALTER TABLE `enrollments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_enrollment` (`student_id`,`course_id`),
   ADD KEY `fk_enroll_course` (`course_id`);
+
+--
+-- Indexes for table `import_logs`
+--
+ALTER TABLE `import_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_import_user` (`user_id`);
 
 --
 -- Indexes for table `lecturers`
@@ -441,7 +530,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `audit_logs`
@@ -453,37 +542,43 @@ ALTER TABLE `audit_logs`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `import_logs`
+--
+ALTER TABLE `import_logs`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `lecturers`
 --
 ALTER TABLE `lecturers`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `manual_attendance`
 --
 ALTER TABLE `manual_attendance`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
 --
 ALTER TABLE `password_resets`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `payment_claims`
@@ -495,19 +590,19 @@ ALTER TABLE `payment_claims`
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables
@@ -539,6 +634,12 @@ ALTER TABLE `courses`
 ALTER TABLE `enrollments`
   ADD CONSTRAINT `fk_enroll_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_enroll_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `import_logs`
+--
+ALTER TABLE `import_logs`
+  ADD CONSTRAINT `fk_import_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `lecturers`

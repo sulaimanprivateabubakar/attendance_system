@@ -120,5 +120,13 @@ $router->post('/admin/claims/:id/approve', 'ClaimController@approve',    ['auth'
 $router->post('/admin/claims/:id/reject',  'ClaimController@reject',     ['auth','role:admin']);
 $router->get('/student/rep-dashboard', 'StudentController@repDashboard', ['auth','role:student']);
 
+// Bulk import routes
+$router->get( '/admin/import',                'ImportController@index',           ['auth','role:admin']);
+$router->post('/admin/import/students',       'ImportController@importStudents',  ['auth','role:admin']);
+$router->post('/admin/import/lecturers',      'ImportController@importLecturers', ['auth','role:admin']);
+$router->post('/admin/import/courses',        'ImportController@importCourses',   ['auth','role:admin']);
+$router->get( '/admin/import/template/:type', 'ImportController@downloadTemplate',['auth','role:admin']);
+$router->get( '/admin/import/logs',           'ImportController@logs',            ['auth','role:admin']);
+
 // ── DISPATCH — must be last ───────────────────────────────────────────────────
 $router->dispatch();
