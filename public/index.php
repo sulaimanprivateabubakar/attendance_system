@@ -132,6 +132,9 @@ $router->get( '/admin/import/logs',           'ImportController@logs',          
 $router->get('/admin/audit',        'AuditController@index',  ['auth','role:admin']);
 $router->get('/admin/audit/export', 'AuditController@export', ['auth','role:admin']);
 $router->get('/admin/audit/:id',    'AuditController@show',   ['auth','role:admin']);
+$router->get('/student/scan', 'StudentController@scanQr', ['auth','role:student']);
+$router->get('/student/scan',          'StudentController@scanQr',    ['auth','role:student']);
+$router->get('/student/attended',      'StudentController@attended',   ['auth','role:student']);
 
 // ── DISPATCH — must be last ───────────────────────────────────────────────────
 $router->dispatch();

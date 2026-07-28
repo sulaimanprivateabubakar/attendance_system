@@ -20,7 +20,6 @@ class StudentController extends Controller
     // GET /student/dashboard
 public function dashboard(): void
 {
-    // Enrolled courses with stats
     $courses = $this->db->all(
         "SELECT c.id, c.code, c.name, c.semester, c.academic_year,
                 u.name AS lecturer_name,
@@ -37,6 +36,77 @@ public function dashboard(): void
           GROUP BY c.id ORDER BY c.name",
         [$this->studentId, $this->studentId]
     );
+
+    $recent = $this->db->all(
+        "SELECT a.*, c.code, c.name AS course_name,
+                sess.session_date, sess.title, sess.start_time
+           FROM attendance a
+           JOIN sessions sess ON sess.id = a.session_id
+           JOIN courses  c    ON c.id    = sess.course_id
+          WHERE a.student_id = ?
+          ORDER BY a.scanned_at DESC LIMIT 10",
+        [$this->studentId]
+    );
+
+    // Active/pending sessions for enrolled courses
+    $liveSessions = $this->db->all(
+        "SELECT sess.id, sess.session_date, sess.start_time, sess.end_time,
+                sess.title, sess.status, sess.qr_token, sess.qr_expires_at,
+                c.name AS course_name, c.code AS course_code,
+                u.name AS lecturer_name,
+                -- check if student already attended
+                (SELECT COUNT(*) FROM attendance a
+                  WHERE a.session_id = sess.id AND a.student_id = ?) AS already_attended
+           FROM sessions sess
+           JOIN courses c      ON c.id  = sess.course_id
+           JOIN lecturers l    ON l.id  = c.lecturer_id
+           JOIN users     u    ON u.id  = l.user_id
+           JOIN enrollments e  ON e.course_id = sess.course_id AND e.student_id = ?
+          WHERE sess.status IN ('active','pending')
+            AND sess.session_date = CURDATE()
+          ORDER BY sess.status DESC, sess.start_time ASC",
+        [$this->studentId, $this->studentId]
+    );
+
+    // Class rep check
+    $isClassRep = $this->db->single(
+        "SELECT e.id, e.course_id, c.name AS course_name, c.code AS course_code
+           FROM enrollments e
+           JOIN courses c ON c.id = e.course_id
+          WHERE e.student_id = ? AND e.is_class_rep = 1 LIMIT 1",
+        [$this->studentId]
+    );
+
+    $pendingConfirmations = [];
+    if ($isClassRep) {
+        $pendingConfirmations = $this->db->all(
+            "SELECT ma.id, ma.reg_number, ma.created_at,
+                    u.name AS student_name, s.student_number,
+                    sess.session_date, sess.id AS session_id,
+                    c.name AS course_name, c.code AS course_code
+               FROM manual_attendance ma
+               JOIN students  s    ON s.id    = ma.student_id
+               JOIN users     u    ON u.id    = s.user_id
+               JOIN sessions  sess ON sess.id = ma.session_id
+               JOIN courses   c    ON c.id    = sess.course_id
+               JOIN enrollments e  ON e.course_id = sess.course_id
+                                   AND e.student_id = ? AND e.is_class_rep = 1
+              WHERE ma.status = 'pending'
+              ORDER BY ma.created_at ASC",
+            [$this->studentId]
+        );
+    }
+
+    $this->view('student/dashboard', [
+        'user'                 => Auth::user(),
+        'courses'              => $courses,
+        'recent'               => $recent,
+        'liveSessions'         => $liveSessions,
+        'isClassRep'           => $isClassRep,
+        'pendingConfirmations' => $pendingConfirmations,
+        'flash'                => $this->getFlash(),
+    ]);
+
 
     // Recent attendance
     $recent = $this->db->all(
@@ -107,39 +177,7 @@ if ($isClassRep) {
     ]);
 }
 
-    // GET /student/courses/:id
-    public function courseDetail(array $params): void
-    {
-        $courseId = (int)$params['id'];
-
-        // Verify enrollment
-        $enrolled = $this->db->single(
-            "SELECT e.id FROM enrollments e WHERE e.student_id = ? AND e.course_id = ?",
-            [$this->studentId, $courseId]
-        );
-        if (!$enrolled) { $this->redirect('/student/dashboard'); }
-
-        $course  = $this->db->single("SELECT * FROM courses WHERE id = ?", [$courseId]);
-
-        $history = $this->db->all(
-            "SELECT sess.session_date, sess.start_time, sess.title,
-                    COALESCE(a.status, 'absent') AS status,
-                    a.scanned_at
-               FROM sessions sess
-               LEFT JOIN attendance a ON a.session_id = sess.id AND a.student_id = ?
-              WHERE sess.course_id = ?
-                AND sess.status = 'closed'
-              ORDER BY sess.session_date DESC",
-            [$this->studentId, $courseId]
-        );
-
-        $this->view('student/course_detail', [
-            'user'    => Auth::user(),
-            'course'  => $course,
-            'history' => $history,
-        ]);
-    }
-
+    
 // POST /student/confirm-attendance/:id
 public function confirmAttendance(array $params): void
 {
@@ -273,6 +311,84 @@ public function repDashboard(): void
         'confirmedToday' => $confirmedToday,
         'csrf'           => Auth::generateCsrfToken(),
         'flash'          => $this->getFlash(),
+    ]);
+}
+
+// GET /student/scan
+public function scanQr(): void
+{
+    $this->view('student/scan_qr', [
+        'user'  => Auth::user(),
+        'flash' => $this->getFlash(),
+    ]);
+}
+
+// GET /student/courses/:id (already exists — enhance it)
+public function courseDetail(array $params): void
+{
+    $courseId = (int)$params['id'];
+
+    $enrolled = $this->db->single(
+        "SELECT e.id FROM enrollments e WHERE e.student_id = ? AND e.course_id = ?",
+        [$this->studentId, $courseId]
+    );
+    if (!$enrolled) { $this->redirect('/student/dashboard'); }
+
+    $course = $this->db->single(
+        "SELECT c.*, u.name AS lecturer_name, d.name AS dept_name
+           FROM courses c
+           JOIN lecturers l ON l.id = c.lecturer_id
+           JOIN users     u ON u.id = l.user_id
+           LEFT JOIN departments d ON d.id = c.department_id
+          WHERE c.id = ?",
+        [$courseId]
+    );
+
+    $history = $this->db->all(
+        "SELECT sess.id, sess.session_date, sess.start_time, sess.end_time,
+                sess.title, sess.status AS session_status,
+                COALESCE(a.status, 'absent') AS att_status,
+                a.scanned_at
+           FROM sessions sess
+           LEFT JOIN attendance a ON a.session_id = sess.id AND a.student_id = ?
+          WHERE sess.course_id = ?
+            AND sess.status = 'closed'
+          ORDER BY sess.session_date DESC, sess.start_time DESC",
+        [$this->studentId, $courseId]
+    );
+
+    // Stats
+    $total    = count($history);
+    $attended = count(array_filter($history, fn($r) => $r['att_status'] !== 'absent'));
+    $pct      = $total > 0 ? round($attended / $total * 100, 1) : 0;
+
+    $this->view('student/course_detail', [
+        'user'    => Auth::user(),
+        'course'  => $course,
+        'history' => $history,
+        'total'   => $total,
+        'attended'=> $attended,
+        'pct'     => $pct,
+    ]);
+}
+
+// GET /student/attended
+public function attended(): void
+{
+    $all = $this->db->all(
+        "SELECT a.*, sess.session_date, sess.title, sess.start_time,
+                c.name AS course_name, c.code AS course_code
+           FROM attendance a
+           JOIN sessions sess ON sess.id = a.session_id
+           JOIN courses  c    ON c.id    = sess.course_id
+          WHERE a.student_id = ?
+          ORDER BY a.scanned_at DESC",
+        [$this->studentId]
+    );
+
+    $this->view('student/attended', [
+        'user'    => Auth::user(),
+        'records' => $all,
     ]);
 }
 }

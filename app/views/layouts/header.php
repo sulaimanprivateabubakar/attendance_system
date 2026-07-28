@@ -76,15 +76,17 @@
         <li><a href="<?= BASE_URL ?>/lecturer/claims"><i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
     </ul>
 </div>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Analytics</div>
-</div>
-        <?php elseif (Auth::isStudent()): ?>
+
+<?php elseif (Auth::isStudent()): ?>
 <div class="sidebar-section">
     <div class="sidebar-section-label">Main</div>
     <ul>
         <li><a href="<?= BASE_URL ?>/student/dashboard">
             <i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="<?= BASE_URL ?>/student/scan">
+            <i class="fas fa-qrcode"></i> Scan QR Code</a></li>
+        <li><a href="<?= BASE_URL ?>/student/attended">
+            <i class="fas fa-history"></i> Attendance History</a></li>
     </ul>
 </div>
 <?php
