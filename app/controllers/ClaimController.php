@@ -128,6 +128,9 @@ class ClaimController extends Controller
         );
 
         $this->flash('success', 'Claim created. Review and submit when ready.');
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record('claim.created', 'claims',
+        "Payment claim created for month=$month by lecturer_id={$this->lecturerId}");
         $this->redirect('/lecturer/claims/' . $id);
     }
 
@@ -177,6 +180,8 @@ class ClaimController extends Controller
             [(int)$params['id'], $this->lecturerId]
         );
         $this->flash('success', 'Claim submitted successfully.');
+        AuditService::record('claim.submitted', 'claims',
+        "Payment claim submitted: claim_id={$params['id']}");
         $this->redirect('/lecturer/claims/' . $params['id']);
     }
 
@@ -230,6 +235,8 @@ public function adminView(array $params): void
             [(int)$params['id']]
         );
         $this->flash('success', 'Claim approved.');
+        AuditService::record('claim.approved', 'claims',
+        "Payment claim approved: claim_id={$params['id']} by admin");
         $this->redirect('/admin/claims');
     }
 
@@ -242,6 +249,8 @@ public function adminView(array $params): void
             [(int)$params['id']]
         );
         $this->flash('error', 'Claim rejected.');
+        AuditService::record('claim.rejected', 'claims',
+        "Payment claim rejected: claim_id={$params['id']} by admin");
         $this->redirect('/admin/claims');
     }
 

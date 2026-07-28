@@ -231,6 +231,12 @@ class ImportController extends Controller
 
         $msg = "✅ $success students imported, $autoEnrolled auto-enrollments created, $failed failed.";
         $this->flash($failed === 0 ? 'success' : 'error', $msg);
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record(
+        'import.students',
+        'import',
+        "Bulk import: $success students added, $failed failed from file: " . $_FILES['file']['name']
+    );
         $this->redirect('/admin/import');
     }
 
@@ -334,6 +340,12 @@ class ImportController extends Controller
 
         $this->flash($failed === 0 ? 'success' : 'error',
             "✅ $success lecturers imported, $failed failed.");
+            require_once APP_PATH . '/services/AuditService.php';
+            AuditService::record(
+                'import.lecturers',
+                'import',
+                "Bulk import: $success lecturers added, $failed failed from file: " . $_FILES['file']['name']
+            );
         $this->redirect('/admin/import');
     }
 
@@ -455,6 +467,12 @@ class ImportController extends Controller
 
         $this->flash($failed === 0 ? 'success' : 'error',
             "✅ $success courses imported, $autoEnrolled auto-enrollments created, $failed failed.");
+            require_once APP_PATH . '/services/AuditService.php';
+            AuditService::record(
+                'import.courses',
+                'import',
+                "Bulk import: $success courses added, $failed failed from file: " . $_FILES['file']['name']
+            );
         $this->redirect('/admin/import');
     }
 

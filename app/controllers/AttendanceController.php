@@ -51,5 +51,15 @@ class AttendanceController extends Controller
             'message' => $result['message'],
             'status'  => $result['status'] ?? null,
         ]);
+        
     }
+}
+
+if ($result['success']) {
+    require_once APP_PATH . '/services/AuditService.php';
+    AuditService::record(
+        'attendance.scanned',
+        'attendance',
+        "QR scan: student_id=" . Auth::id() . " token=$token status={$result['status']}"
+    );
 }

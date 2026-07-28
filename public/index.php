@@ -128,5 +128,10 @@ $router->post('/admin/import/courses',        'ImportController@importCourses', 
 $router->get( '/admin/import/template/:type', 'ImportController@downloadTemplate',['auth','role:admin']);
 $router->get( '/admin/import/logs',           'ImportController@logs',            ['auth','role:admin']);
 
+// Audit routes
+$router->get('/admin/audit',        'AuditController@index',  ['auth','role:admin']);
+$router->get('/admin/audit/export', 'AuditController@export', ['auth','role:admin']);
+$router->get('/admin/audit/:id',    'AuditController@show',   ['auth','role:admin']);
+
 // ── DISPATCH — must be last ───────────────────────────────────────────────────
 $router->dispatch();

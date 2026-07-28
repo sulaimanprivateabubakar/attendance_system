@@ -50,6 +50,15 @@ class AuthController extends Controller
             $this->redirect($intended);
         }
 
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record(
+            'auth.login',
+            'auth',
+            'User logged in: ' . $email,
+            null,
+            ['email' => $email, 'role' => $user['role']]
+        );
+
         $this->redirectByRole();
     }
 
@@ -87,13 +96,22 @@ class AuthController extends Controller
             $this->redirect('/register');
         }
 
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record(
+            'user.registered',
+            'auth',
+            'New student registered: ' . $this->post('name') . ' (' . $this->post('email') . ')'
+        );
+
         $this->flash('success', 'Registration successful! Please log in.');
         $this->redirect('/login');
     }
 
- // GET /logout
+    // GET /logout
     public function logout(): void
     {
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record('auth.logout', 'auth', 'User logged out: ' . (Auth::user()['name'] ?? ''));
         Auth::logout();
         $this->redirect('/login');
     }

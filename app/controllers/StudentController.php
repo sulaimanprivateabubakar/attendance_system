@@ -168,6 +168,12 @@ public function confirmAttendance(array $params): void
 
     if (!$isRep) {
         $this->flash('error', 'You are not the class rep for this course.');
+        require_once APP_PATH . '/services/AuditService.php';
+        AuditService::record(
+        'attendance.manual.' . $action,
+        'attendance',
+        "Class rep {$action}ed manual attendance request id=$id"
+        );
         $this->redirect('/student/dashboard');
     }
 

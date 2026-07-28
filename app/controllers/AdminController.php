@@ -1,6 +1,7 @@
 <?php
 // app/controllers/AdminController.php
 
+
 class AdminController extends Controller
 {
     // GET /admin/dashboard
@@ -59,15 +60,22 @@ class AdminController extends Controller
 
     // POST /admin/users/:id/toggle
     public function toggleUser(array $params): void
-    {
-        $this->validateCsrf();
-        $this->db->execute(
-            "UPDATE users SET is_active = NOT is_active WHERE id = ? AND role != 'admin'",
-            [(int)$params['id']]
-        );
-        $this->flash('success', 'User status updated.');
-        $this->redirect('/admin/users');
-    }
+{
+    $this->validateCsrf();
+    $u = $this->db->single("SELECT name, email, is_active FROM users WHERE id = ?", [(int)$params['id']]);
+    $this->db->execute(
+        "UPDATE users SET is_active = NOT is_active WHERE id = ? AND role != 'admin'",
+        [(int)$params['id']]
+    );
+    $newState = $u['is_active'] ? 'disabled' : 'enabled';
+    $this->audit('user.toggled', 'users',
+        "User account $newState: {$u['name']} ({$u['email']})",
+        ['is_active' => $u['is_active']],
+        ['is_active' => !$u['is_active']]
+    );
+    $this->flash('success', 'User status updated.');
+    $this->redirect('/admin/users');
+}
 
     // GET /admin/users/create
     public function createUserForm(): void
@@ -146,6 +154,11 @@ class AdminController extends Controller
             });
 
             $this->flash('success', 'User created successfully.');
+
+            $this->flash('success', 'User created successfully.');
+            $this->audit('user.created', 'users',
+            "Created $role account: $name ($email)");
+
         } catch (Throwable $e) {
             error_log($e->getMessage());
             $this->flash('error', 'Failed to create user.');
@@ -153,6 +166,7 @@ class AdminController extends Controller
 
         $this->redirect('/admin/users');
     }
+    
 
     // GET /admin/courses
     public function courses(): void
@@ -209,24 +223,30 @@ class AdminController extends Controller
         (int)$this->post('semester', 1),
         $this->post('year_of_study') ?: null,
         $this->clean($this->post('academic_year','')),
+        
     ]
 );
 
         $this->flash('success', 'Course created.');
         $this->redirect('/admin/courses');
+        $this->audit('course.created', 'courses',
+    'Created course: ' . strtoupper(trim($this->post('code',''))) . ' — ' . $this->post('name',''));
     }
 
     // POST /admin/courses/:id/toggle
-    public function toggleCourse(array $params): void
-    {
-        $this->validateCsrf();
-        $this->db->execute(
-            "UPDATE courses SET is_active = NOT is_active WHERE id = ?",
-            [(int)$params['id']]
-        );
-        $this->flash('success', 'Course status updated.');
-        $this->redirect('/admin/courses');
-    }
+public function toggleCourse(array $params): void
+{
+    $this->validateCsrf();
+    $c = $this->db->single("SELECT code, name, is_active FROM courses WHERE id = ?", [(int)$params['id']]);
+    $this->db->execute(
+        "UPDATE courses SET is_active = NOT is_active WHERE id = ?", [(int)$params['id']]
+    );
+    $state = $c['is_active'] ? 'deactivated' : 'activated';
+    $this->audit('course.toggled', 'courses',
+        "Course $state: {$c['code']} — {$c['name']}");
+    $this->flash('success', 'Course status updated.');
+    $this->redirect('/admin/courses');
+}
 
     // GET /admin/courses/:id/enrollment
     public function enrollmentView(array $params): void
@@ -298,6 +318,8 @@ class AdminController extends Controller
             $this->flash('error', 'Student already enrolled.');
         }
         $this->redirect('/admin/courses/' . $courseId . '/enrollment');
+        $this->audit('enrollment.created', 'enrollments',
+        "Student enrolled in course_id={$courseId} student_id={$studentId}");
     }
 
     // GET /admin/departments
@@ -340,6 +362,8 @@ class AdminController extends Controller
             [$name, $code]
         );
         $this->flash('success', 'Department created.');
+        $this->audit('department.created', 'departments',
+        "Created department: $name ($code)");
         $this->redirect('/admin/departments');
     }
 
@@ -458,6 +482,14 @@ public function setClassRep(array $params): void
     );
 
     $this->flash('success', 'Class representative assigned successfully.');
+    $this->audit('classrep.assigned', 'enrollments',
+    "Class rep assigned for course_id={$courseId} student_id={$studentId}");
     $this->redirect('/admin/courses/' . $courseId . '/enrollment');
+}
+
+private function audit(string $action, string $module, string $desc, $old = null, $new = null): void
+{
+    require_once APP_PATH . '/services/AuditService.php';
+    AuditService::record($action, $module, $desc, $old, $new);
 }
 }

@@ -27,31 +27,14 @@
             <span>Iqra'a University</span>
         </div>
 
-        <?php if (Auth::isAdmin()): ?>
-        <div class="sidebar-section">
-            <div class="sidebar-section-label">Main</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/admin/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
-            </ul>
-        </div>
-        <div class="sidebar-section">
-            <div class="sidebar-section-label">Management</div>
-            <ul>
-                <li><a href="<?= BASE_URL ?>/admin/users"><i class="fas fa-users"></i> Users</a></li>
-                <li><a href="<?= BASE_URL ?>/admin/courses"><i class="fas fa-book"></i> Courses</a></li>
-                <li><a href="<?= BASE_URL ?>/admin/departments"><i class="fas fa-building"></i> Departments</a></li>
-            </ul>
-        </div>
-        <div class="sidebar-section">
-    <div class="sidebar-section-label">Analytics</div>
+       <?php if (Auth::isAdmin()): ?>
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
     <ul>
-        <li><a href="<?= BASE_URL ?>/admin/reports">
-            <i class="fas fa-chart-bar"></i> Reports</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/claims">
-            <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/dashboard">
+            <i class="fas fa-th-large"></i> Dashboard</a></li>
     </ul>
 </div>
-
 <div class="sidebar-section">
     <div class="sidebar-section-label">Management</div>
     <ul>
@@ -63,6 +46,18 @@
             <i class="fas fa-building"></i> Departments</a></li>
         <li><a href="<?= BASE_URL ?>/admin/import">
             <i class="fas fa-file-upload"></i> Bulk Import</a></li>
+    </ul>
+</div>
+
+<div class="sidebar-section">
+    <div class="sidebar-section-label">Analytics</div>
+    <ul>
+        <li><a href="<?= BASE_URL ?>/admin/reports">
+            <i class="fas fa-chart-bar"></i> Reports</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/claims">
+            <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+        <li><a href="<?= BASE_URL ?>/admin/audit">
+            <i class="fas fa-shield-alt"></i> Audit Logs</a></li>
     </ul>
 </div>
 
@@ -93,6 +88,7 @@
     </ul>
 </div>
 <?php
+
 // Check if student is class rep
 $db = Database::getInstance();
 $studentRec = $db->single("SELECT id FROM students WHERE user_id = ?", [Auth::id()]);
