@@ -27,8 +27,8 @@
         </div>
 
         <div class="form-group">
-            <label>Session Title <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-            <input type="text" name="title" placeholder="e.g. Week 3 – Lecture">
+            <label>Class Room No. <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+            <input type="text" name="title" placeholder="e.g. Room 03">
         </div>
 
         <div class="form-group">

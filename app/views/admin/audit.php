@@ -2,7 +2,7 @@
 
 <div class="page-title">
     <div>
-        <h1>🔍 Audit Logs</h1>
+        <h1>Audit Logs</h1>
         <p>Complete system activity trail</p>
     </div>
     <a href="<?= BASE_URL ?>/admin/audit/export?filter=<?= htmlspecialchars($filter) ?>"

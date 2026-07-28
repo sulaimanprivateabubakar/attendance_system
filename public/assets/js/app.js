@@ -496,3 +496,22 @@ document.getElementById('togglePassword').addEventListener('click', function () 
         icon.classList.add('fa-eye');
     }
 });
+
+var togglePasswordBtn = document.getElementById('togglePassword');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', function () {
+        const password = document.getElementById('password');
+        const icon = this.querySelector('i');
+        if (!password) return;
+
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+}
