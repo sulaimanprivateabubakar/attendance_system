@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 27, 2026 at 11:59 PM
+-- Generation Time: Jul 28, 2026 at 12:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -66,11 +66,32 @@ INSERT INTO `attendance` (`id`, `session_id`, `student_id`, `scanned_at`, `ip_ad
 CREATE TABLE `audit_logs` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED DEFAULT NULL,
+  `user_name` varchar(120) DEFAULT NULL,
+  `user_role` varchar(20) DEFAULT NULL,
   `action` varchar(100) NOT NULL,
+  `module` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
+  `old_value` text DEFAULT NULL,
+  `new_value` text DEFAULT NULL,
   `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `audit_logs`
+--
+
+INSERT INTO `audit_logs` (`id`, `user_id`, `user_name`, `user_role`, `action`, `module`, `description`, `old_value`, `new_value`, `ip_address`, `user_agent`, `created_at`) VALUES
+(1, 2, 'System Admin', 'admin', 'auth.logout', 'auth', 'User logged out: System Admin', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 09:28:06'),
+(2, 6, 'Wilson Leman', 'lecturer', 'auth.login', 'auth', 'User logged in: wleman@gmail.com', NULL, '{\"email\":\"wleman@gmail.com\",\"role\":\"lecturer\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 09:28:31'),
+(3, 6, 'Wilson Leman', 'lecturer', 'auth.logout', 'auth', 'User logged out: Wilson Leman', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 09:28:57'),
+(4, 2, 'System Admin', 'admin', 'auth.login', 'auth', 'User logged in: admin@university.edu', NULL, '{\"email\":\"admin@university.edu\",\"role\":\"admin\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 09:29:03'),
+(5, 2, 'System Admin', 'admin', 'user.created', 'users', 'Created student account: Shareef Saeed (shareef@gmail.com)', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 09:59:47'),
+(6, 2, 'System Admin', 'admin', 'auth.logout', 'auth', 'User logged out: System Admin', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 10:05:46'),
+(7, 6, 'Wilson Leman', 'lecturer', 'auth.login', 'auth', 'User logged in: wleman@gmail.com', NULL, '{\"email\":\"wleman@gmail.com\",\"role\":\"lecturer\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 10:06:31'),
+(8, 6, 'Wilson Leman', 'lecturer', 'auth.logout', 'auth', 'User logged out: Wilson Leman', NULL, NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 10:07:53'),
+(9, 7, 'Austin Phiri', 'student', 'auth.login', 'auth', 'User logged in: austin@gmail.com', NULL, '{\"email\":\"austin@gmail.com\",\"role\":\"student\"}', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', '2026-07-28 10:09:08');
 
 -- --------------------------------------------------------
 
@@ -367,7 +388,8 @@ INSERT INTO `students` (`id`, `user_id`, `department_id`, `student_number`, `yea
 (11, 17, 1, '2024/CS/001324', 1, '2.66E+11', '2026-07-27 21:52:47'),
 (12, 18, 1, '2024/CS/002654', 1, NULL, '2026-07-27 21:52:47'),
 (13, 19, 2, '2024/IT/0010987', 2, '2.66E+11', '2026-07-27 21:52:47'),
-(14, 20, 3, '2024/BA/001194', 1, NULL, '2026-07-27 21:52:47');
+(14, 20, 3, '2024/BA/001194', 1, NULL, '2026-07-27 21:52:47'),
+(15, 21, 3, '2025/32/984/C/456', NULL, NULL, '2026-07-28 09:59:47');
 
 -- --------------------------------------------------------
 
@@ -393,7 +415,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `created_at`, `updated_at`) VALUES
 (2, 'System Admin', 'admin@university.edu', '$2y$10$TOXXhEi5e6NwEVs4gFlWBeUzOBm0N.DoKY5zAJ3jYS8tyTn0/XJI6', 'admin', 1, '2026-06-29 15:05:03', '2026-06-30 07:11:31'),
 (6, 'Wilson Leman', 'wleman@gmail.com', '$2y$10$I09zmZ/JPrUn588fnfY3OOMu4cSugmH7YVw.g6tuVv640MSe2b4V2', 'lecturer', 1, '2026-06-30 20:06:43', '2026-06-30 20:06:43'),
-(7, 'Austin Phiri', 'austin@gmai.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-06-30 20:07:22'),
+(7, 'Austin Phiri', 'austin@gmail.com', '$2y$10$aO67zBB8axkjYm0JpkjktOTi4U9TKjpqBQkDt.KRdX9f5SjEEXi.S', 'student', 1, '2026-06-30 20:07:22', '2026-07-28 10:08:53'),
 (8, 'Ruqaya Frank', 'ruqaya@gmail.com', '$2y$10$zzdOCa8fJuNc0Y84H7gYz.mSBxtRGjYEerXOYH3FV4qJwWcHGj6Z2', 'student', 1, '2026-07-04 08:31:16', '2026-07-04 22:07:16'),
 (9, 'Barack Husen', 'barack@gmail.com', '$2y$10$DrW9vjznRrV/juK9ffH5TeBJxIi5ZzMsAOD/qbyJrUXnSjLb5VyWS', 'lecturer', 1, '2026-07-04 08:32:36', '2026-07-04 08:32:36'),
 (10, 'suleman', 'sule@gmail.com', '$2y$10$eXQhaWfsDqPLxDTiEVhft.jWr9JgFtL8D2JtQtvU9MG6UPexohkVa', 'student', 1, '2026-07-11 06:45:54', '2026-07-11 06:45:54'),
@@ -406,7 +428,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `cr
 (17, 'Abdul Razack', 'abbdul@uni.edu', '$2y$10$SCVSdQ9MxSFj2jufn358u.LviQ53413C5efi0LPGyzOdm165i15Ba', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
 (18, 'Asiya Hanif', 'asiya@uni.edu', '$2y$10$drSm.cZUut02WuG9GIZh6uRSRmrMY3SV.t5htLsL9FCClbv2BtGLu', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
 (19, 'Ren Chirwa', 'renc@uni.edu', '$2y$10$gSdJz8Xy5z9Kmn7xB4anx.ugyhbCTwR7VN78uSQABcgMT2L.smwuu', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
-(20, 'Jannah saeed', 'janna@uni.edu', '$2y$10$iJKA71Ec7mqpEsAc.HhxbeqPfvIq.iyrWhNrPpzo6FeIBpJ42qg0m', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47');
+(20, 'Jannah saeed', 'janna@uni.edu', '$2y$10$iJKA71Ec7mqpEsAc.HhxbeqPfvIq.iyrWhNrPpzo6FeIBpJ42qg0m', 'student', 1, '2026-07-27 21:52:47', '2026-07-27 21:52:47'),
+(21, 'Shareef Saeed', 'shareef@gmail.com', '$2y$10$Nnk76YoJkrpfobmtQPzVYOyoYB42.X.GjWv2ksTwpsT98s0fX4igS', 'student', 1, '2026-07-28 09:59:47', '2026-07-28 09:59:47');
 
 --
 -- Indexes for dumped tables
@@ -428,7 +451,9 @@ ALTER TABLE `attendance`
 ALTER TABLE `audit_logs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_audit_user` (`user_id`),
-  ADD KEY `idx_audit_action` (`action`);
+  ADD KEY `idx_audit_action` (`action`),
+  ADD KEY `idx_audit_module` (`module`),
+  ADD KEY `idx_audit_created` (`created_at`);
 
 --
 -- Indexes for table `courses`
@@ -536,7 +561,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `audit_logs`
 --
 ALTER TABLE `audit_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `courses`
@@ -596,13 +621,13 @@ ALTER TABLE `sessions`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
