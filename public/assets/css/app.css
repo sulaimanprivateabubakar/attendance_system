@@ -366,13 +366,15 @@ BUTTONS
 .btn:active { transform: scale(.97); }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     color: #fff;
-    box-shadow: 0 6px 20px rgba(37,99,235,.35);
+    box-shadow: 0 6px 20px rgba(22,163,74,.25);
 }
+
 .btn-primary:hover {
+    background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(37,99,235,.45);
+    box-shadow: 0 10px 28px rgba(22,163,74,.35);
     color: #fff;
 }
 
@@ -761,20 +763,9 @@ AUTH PAGES
     overflow: hidden;
 }
 
-.auth-wrapper::before {
-    content: '';
-    position: absolute;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(22,163,74,.12) 0%, transparent 70%);
-    top: -100px; left: -100px;
-}
-
+.auth-wrapper::before,
 .auth-wrapper::after {
-    content: '';
-    position: absolute;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(22,163,74,.08) 0%, transparent 70%);
-    bottom: -80px; right: -80px;
+    display: none;
 }
 
 .auth-card {
@@ -1276,8 +1267,8 @@ body.light-mode .sidebar-logo {
     color: #0f172a;
 }
 
-body.light-mode .sidebar-logo-icon {
-    background: linear-gradient(135deg, #16a34a, #22c55e);
+.sidebar-logo-icon {
+    background: var(--primary);
 }
 
 body.light-mode .sidebar-footer {
