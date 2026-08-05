@@ -26,6 +26,69 @@
     </div>
 </div>
 
+
+<!-- Approval Pipeline (read-only for lecturer) -->
+<div class="panel" style="margin-bottom:22px">
+    <div class="panel-header">
+        <h2><i class="fas fa-sitemap" style="color:var(--primary);margin-right:8px"></i>Approval Status</h2>
+    </div>
+    <div style="padding:20px 24px;overflow-x:auto">
+        <div style="display:flex;align-items:center;gap:0;min-width:600px">
+        <?php
+        $stages = [
+            ['col'=>'hod',       'label'=>'Head of Dept'],
+            ['col'=>'hoa',       'label'=>'Head of Academics'],
+            ['col'=>'registrar', 'label'=>'Registrar'],
+            ['col'=>'vc',        'label'=>'Vice Chancellor'],
+            ['col'=>'accounts',  'label'=>'Accounts Office'],
+        ];
+        foreach ($stages as $i => $s):
+            $col = $s['col'];
+            $approved = $claim[$col.'_approved'] ?? null;
+            $name     = $claim[$col.'_name']     ?? null;
+            $at       = $claim[$col.'_approved_at'] ?? null;
+            $isCurrent= $claim['current_stage'] === $col;
+
+            if ($approved == 1) {
+                $color = 'var(--success)'; $icon = 'fa-check-circle'; $bg = 'rgba(34,197,94,.15)';
+            } elseif ($approved === 0 || $approved === '0') {
+                $color = 'var(--danger)';  $icon = 'fa-times-circle'; $bg = 'rgba(239,68,68,.12)';
+            } elseif ($isCurrent) {
+                $color = 'var(--warning)'; $icon = 'fa-clock';        $bg = 'rgba(245,158,11,.12)';
+            } else {
+                $color = 'var(--border)';  $icon = 'fa-circle';       $bg = 'rgba(255,255,255,.03)';
+            }
+        ?>
+        <div style="flex-shrink:0;text-align:center;min-width:110px">
+            <div style="width:44px;height:44px;border-radius:50%;background:<?= $bg ?>;
+                        border:2px solid <?= $color ?>;display:flex;align-items:center;
+                        justify-content:center;margin:0 auto 8px">
+                <i class="fas <?= $icon ?>" style="color:<?= $color ?>"></i>
+            </div>
+            <div style="font-size:.72rem;font-weight:600;color:var(--text-light)">
+                <?= $s['label'] ?>
+            </div>
+            <?php if ($name): ?>
+            <div style="font-size:.65rem;color:var(--text-muted);margin-top:2px">
+                <?= htmlspecialchars($name) ?>
+            </div>
+            <?php endif; ?>
+            <?php if ($at): ?>
+            <div style="font-size:.62rem;color:var(--text-muted)">
+                <?= date('M j', strtotime($at)) ?>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php if ($i < count($stages)-1): ?>
+        <div style="flex:1;height:2px;background:<?= $approved==1 ? 'var(--success)' : 'rgba(255,255,255,.06)' ?>;
+                    margin-bottom:28px;min-width:20px"></div>
+        <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
+
 <!-- Status banner -->
 <?php
 $statusColor = match($claim['status']) {

@@ -99,7 +99,7 @@ class AdminController extends Controller
         $pass   = $this->post('password', '');
         $deptId = $this->post('department_id') ?: null;
 
-        if (!in_array($role, ['lecturer','student','admin'])) {
+        if (!in_array($role, ['lecturer','student','admin','hod','hoa','registrar','vc','accounts'])) {
             $this->flash('error', 'Invalid role.');
             $this->redirect('/admin/users/create');
         }
@@ -370,98 +370,266 @@ public function toggleCourse(array $params): void
     // GET /admin/reports
     public function reports(): void
 {
-    $courses = $this->db->all(
-        "SELECT id, code, name FROM courses WHERE is_active = 1 ORDER BY name"
-    );
+    // Filters
+    $dateFrom   = $this->get('date_from', date('Y-m-01'));
+    $dateTo     = $this->get('date_to',   date('Y-m-d'));
+    $courseId   = (int)$this->get('course_id', 0);
+    $deptId     = (int)$this->get('dept_id', 0);
+    $semester   = (int)$this->get('semester', 0);
+    $yearStudy  = (int)$this->get('year_of_study', 0);
+    $groupBy    = $this->get('group_by', 'course');
 
-    // Overall stats
-    $totalSessions = (int)$this->db->scalar("SELECT COUNT(*) FROM sessions WHERE status='closed'");
-    $totalScans    = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance");
-    $presentCount  = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance WHERE status='present'");
-    $lateCount     = (int)$this->db->scalar("SELECT COUNT(*) FROM attendance WHERE status='late'");
+    // Build WHERE conditions
+    $conditions = ["s.session_date BETWEEN ? AND ?"];
+    $params     = [$dateFrom, $dateTo];
 
-    // Absent = total possible - attended
-    $totalEnrolled = (int)$this->db->scalar("SELECT COUNT(*) FROM enrollments");
-    $absentCount   = max(0, ($totalEnrolled * $totalSessions) - $totalScans);
-
-    // Average attendance rate
-    $avgRate = 0;
-    if ($totalSessions > 0 && $totalEnrolled > 0) {
-        $avgRate = round($totalScans / ($totalSessions * $totalEnrolled) * 100, 1);
+    if ($courseId) {
+        $conditions[] = "s.course_id = ?";
+        $params[]     = $courseId;
     }
 
-    $stats = [
-        'total_sessions' => $totalSessions,
-        'total_scans'    => $totalScans,
-        'present_count'  => $presentCount,
-        'late_count'     => $lateCount,
-        'absent_count'   => $absentCount,
-        'avg_rate'       => $avgRate,
-    ];
+    if ($deptId) {
+        $conditions[] = "c.department_id = ?";
+        $params[]     = $deptId;
+    }
 
-    // Per-course stats for bar chart
-    $courseStats = $this->db->all(
-        "SELECT c.code, c.name,
-                COUNT(DISTINCT s.id)   AS session_count,
-                COUNT(DISTINCT e.id)   AS enrolled_count,
-                COUNT(DISTINCT a.id)   AS attended_count,
-                CASE
-                    WHEN COUNT(DISTINCT s.id) * COUNT(DISTINCT e.id) = 0 THEN 0
-                    ELSE ROUND(
-                        COUNT(DISTINCT a.id) /
-                        (COUNT(DISTINCT s.id) * COUNT(DISTINCT e.id)) * 100, 1
-                    )
-                END AS avg_rate
-           FROM courses c
-           LEFT JOIN sessions    s ON s.course_id = c.id AND s.status = 'closed'
-           LEFT JOIN enrollments e ON e.course_id = c.id
-           LEFT JOIN attendance  a ON a.session_id = s.id
-          WHERE c.is_active = 1
-          GROUP BY c.id
-          ORDER BY c.name"
+    if ($semester) {
+        $conditions[] = "c.semester = ?";
+        $params[]     = $semester;
+    }
+
+    if ($yearStudy) {
+        $conditions[] = "c.year_of_study = ?";
+        $params[]     = $yearStudy;
+    }
+
+    $where = implode(' AND ', $conditions);
+
+    // Overall stats
+   // Overall stats
+$stats = $this->db->single(
+    "SELECT
+        COUNT(DISTINCT s.id)      AS total_sessions,
+        COUNT(DISTINCT a.id)      AS total_scans,
+        SUM(a.status = 'present') AS present_count,
+        SUM(a.status = 'late')    AS late_count
+       FROM sessions s
+       JOIN courses c ON c.id = s.course_id
+       LEFT JOIN attendance a ON a.session_id = s.id
+      WHERE s.status = 'closed' AND $where",
+    $params
+);
+
+// Avg rate separately — simpler query
+$avgRate = $this->db->scalar(
+    "SELECT ROUND(
+        COUNT(DISTINCT a.id) /
+        NULLIF(
+            (SELECT COUNT(DISTINCT s2.id) * COUNT(DISTINCT e2.student_id)
+               FROM sessions s2
+               JOIN courses c2 ON c2.id = s2.course_id
+               LEFT JOIN enrollments e2 ON e2.course_id = s2.course_id
+              WHERE s2.status = 'closed'
+                AND s2.session_date BETWEEN ? AND ?
+            ), 0
+        ) * 100
+    , 1)
+       FROM sessions s
+       JOIN courses c ON c.id = s.course_id
+       LEFT JOIN attendance a ON a.session_id = s.id
+      WHERE s.status = 'closed' AND $where",
+    array_merge([$dateFrom, $dateTo], $params)
+);
+
+    // Course stats for charts and table
+    // Course stats
+$courseWhere = "s.status = 'closed' AND s.session_date BETWEEN ? AND ?";
+$courseParams = [$dateFrom, $dateTo];
+
+if ($courseId) { $courseWhere .= " AND c.id = ?";              $courseParams[] = $courseId; }
+if ($deptId)   { $courseWhere .= " AND c.department_id = ?";   $courseParams[] = $deptId; }
+if ($semester) { $courseWhere .= " AND c.semester = ?";        $courseParams[] = $semester; }
+if ($yearStudy){ $courseWhere .= " AND c.year_of_study = ?";   $courseParams[] = $yearStudy; }
+
+$courseStats = $this->db->all(
+    "SELECT c.id, c.code, c.name AS course_name, c.semester,
+            c.year_of_study, d.name AS dept_name,
+            u.name AS lecturer_name,
+            COUNT(DISTINCT s.id)         AS session_count,
+            COUNT(DISTINCT e.student_id) AS enrolled_count,
+            COUNT(DISTINCT a.id)         AS total_attended,
+            ROUND(
+                COUNT(DISTINCT a.id) /
+                NULLIF(COUNT(DISTINCT s.id) * COUNT(DISTINCT e.student_id), 0)
+                * 100
+            , 1) AS avg_rate
+       FROM courses c
+       JOIN sessions    s ON s.course_id = c.id
+       LEFT JOIN attendance  a ON a.session_id = s.id
+       LEFT JOIN enrollments e ON e.course_id  = c.id
+       LEFT JOIN departments d ON d.id = c.department_id
+       LEFT JOIN lecturers   l ON l.id = c.lecturer_id
+       LEFT JOIN users       u ON u.id = l.user_id
+      WHERE $courseWhere
+      GROUP BY c.id
+      ORDER BY avg_rate DESC",
+    $courseParams
+);
+
+// Department stats
+$deptWhere  = "s.session_date BETWEEN ? AND ? AND s.status = 'closed'";
+$deptParams = [$dateFrom, $dateTo];
+if ($deptId) { $deptWhere .= " AND d.id = ?"; $deptParams[] = $deptId; }
+
+$deptStats = $this->db->all(
+    "SELECT d.id, d.name AS dept_name, d.code AS dept_code,
+            COUNT(DISTINCT c.id)         AS course_count,
+            COUNT(DISTINCT s.id)         AS session_count,
+            COUNT(DISTINCT e.student_id) AS student_count,
+            COUNT(DISTINCT a.id)         AS total_attended,
+            ROUND(
+                COUNT(DISTINCT a.id) /
+                NULLIF(COUNT(DISTINCT s.id) * COUNT(DISTINCT e.student_id), 0)
+                * 100
+            , 1) AS avg_rate
+       FROM departments d
+       LEFT JOIN courses     c ON c.department_id = d.id
+       LEFT JOIN sessions    s ON s.course_id = c.id
+                               AND $deptWhere
+       LEFT JOIN enrollments e ON e.course_id  = c.id
+       LEFT JOIN attendance  a ON a.session_id = s.id
+      GROUP BY d.id
+      ORDER BY avg_rate DESC",
+    $deptParams
+);
+
+// Daily trend
+$trendWhere  = "DATE(a.scanned_at) BETWEEN ? AND ?";
+$trendParams = [$dateFrom, $dateTo];
+if ($courseId) { $trendWhere .= " AND s.course_id = ?";      $trendParams[] = $courseId; }
+if ($deptId)   { $trendWhere .= " AND c.department_id = ?";  $trendParams[] = $deptId; }
+
+$dailyTrend = $this->db->all(
+    "SELECT DATE(a.scanned_at) AS scan_date,
+            COUNT(*)            AS scan_count
+       FROM attendance a
+       JOIN sessions s ON s.id  = a.session_id
+       JOIN courses  c ON c.id  = s.course_id
+      WHERE $trendWhere
+      GROUP BY DATE(a.scanned_at)
+      ORDER BY scan_date ASC",
+    $trendParams
+);
+
+    // Dropdown data
+    $courses     = $this->db->all(
+        "SELECT id, code, name, semester, year_of_study FROM courses
+          WHERE is_active = 1 ORDER BY code"
     );
-
-    // Daily trend last 14 days
-    $dailyTrend = $this->db->all(
-        "SELECT DATE(scanned_at) AS scan_date,
-                COUNT(*) AS scan_count
-           FROM attendance
-          WHERE scanned_at >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
-          GROUP BY DATE(scanned_at)
-          ORDER BY scan_date ASC"
+    $departments = $this->db->all(
+        "SELECT id, name, code FROM departments ORDER BY name"
     );
 
     $this->view('admin/reports', [
-        'user'        => Auth::user(),
-        'courses'     => $courses,
-        'stats'       => $stats,
-        'courseStats' => $courseStats,
-        'dailyTrend'  => $dailyTrend,
-        'flash'       => $this->getFlash(),
-    ]);
+    'user'        => Auth::user(),
+    'stats'       => array_merge(
+                        $stats ?? [],
+                        ['avg_rate' => $avgRate ?? 0]
+                     ),
+    'courseStats' => $courseStats,
+    'deptStats'   => $deptStats,
+    'dailyTrend'  => $dailyTrend,
+    'courses'     => $courses,
+    'departments' => $departments,
+    'dateFrom'    => $dateFrom,
+    'dateTo'      => $dateTo,
+    'courseId'    => $courseId,
+    'deptId'      => $deptId,
+    'semester'    => $semester,
+    'yearStudy'   => $yearStudy,
+    'groupBy'     => $groupBy,
+    'flash'       => $this->getFlash(),
+]);
 }
 
     // GET /admin/reports/export
     public function exportReport(): void
-    {
-        $courseId = (int)$this->get('course_id');
-        $format   = $this->get('format', 'csv');
+{
+    $dateFrom  = $this->get('date_from', date('Y-m-01'));
+    $dateTo    = $this->get('date_to',   date('Y-m-d'));
+    $courseId  = (int)$this->get('course_id', 0);
+    $deptId    = (int)$this->get('dept_id', 0);
+    $semester  = (int)$this->get('semester', 0);
+    $yearStudy = (int)$this->get('year_of_study', 0);
+    $format    = $this->get('format', 'csv');
 
-        if (!$courseId) {
-            $this->flash('error', 'Please select a course.');
-            $this->redirect('/admin/reports');
-        }
+    $conditions = ["s.session_date BETWEEN ? AND ?", "s.status = 'closed'"];
+    $params     = [$dateFrom, $dateTo];
 
-        require_once APP_PATH . '/services/ReportService.php';
-        $reportService = new ReportService();
+    if ($courseId) { $conditions[] = "s.course_id = ?";       $params[] = $courseId; }
+    if ($deptId)   { $conditions[] = "c.department_id = ?";   $params[] = $deptId; }
+    if ($semester) { $conditions[] = "c.semester = ?";        $params[] = $semester; }
+    if ($yearStudy){ $conditions[] = "c.year_of_study = ?";   $params[] = $yearStudy; }
 
-        if ($format === 'csv') {
-            $reportService->exportCsv($courseId);
-        } else {
-            $reportService->exportPdf($courseId);
-        }
+    $where = implode(' AND ', $conditions);
+
+    $rows = $this->db->all(
+        "SELECT u.name AS student_name, st.student_number,
+                c.code AS course_code, c.name AS course_name,
+                c.semester, c.year_of_study,
+                d.name AS dept_name,
+                s.session_date, s.start_time, s.end_time,
+                COALESCE(a.status, 'absent') AS status,
+                a.scanned_at,
+                lu.name AS lecturer_name
+           FROM sessions s
+           JOIN courses    c  ON c.id  = s.course_id
+           JOIN enrollments e ON e.course_id = c.id
+           JOIN students   st ON st.id = e.student_id
+           JOIN users      u  ON u.id  = st.user_id
+           LEFT JOIN attendance a ON a.session_id = s.id AND a.student_id = st.id
+           LEFT JOIN departments d ON d.id = c.department_id
+           LEFT JOIN lecturers   l ON l.id = c.lecturer_id
+           LEFT JOIN users      lu ON lu.id = l.user_id
+          WHERE $where
+          ORDER BY s.session_date DESC, c.code, u.name",
+        $params
+    );
+
+    $filename = 'attendance_report_' . $dateFrom . '_to_' . $dateTo;
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
+
+    $out = fopen('php://output', 'w');
+    fputcsv($out, [
+        'Student Name', 'Reg Number', 'Department', 'Course Code',
+        'Course Name', 'Semester', 'Year', 'Lecturer',
+        'Session Date', 'Start Time', 'End Time',
+        'Status', 'Scanned At'
+    ]);
+
+    foreach ($rows as $row) {
+        fputcsv($out, [
+            $row['student_name'],
+            $row['student_number'],
+            $row['dept_name'] ?? '',
+            $row['course_code'],
+            $row['course_name'],
+            $row['semester'],
+            $row['year_of_study'],
+            $row['lecturer_name'] ?? '',
+            $row['session_date'],
+            substr($row['start_time'],0,5),
+            substr($row['end_time'],0,5),
+            $row['status'],
+            $row['scanned_at'] ?? '',
+        ]);
     }
 
+    fclose($out);
+    exit;
+}
 
 public function setClassRep(array $params): void
 {

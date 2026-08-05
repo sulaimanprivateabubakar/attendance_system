@@ -19,122 +19,152 @@
 
     <!-- ── SIDEBAR ─────────────────────────────────────────── -->
     <aside class="sidebar" id="sidebar">
+
         <div class="sidebar-logo">
             <div class="auth-logo">
-    <img src="<?= BASE_URL ?>/assets/images/logo.webp"
-         alt="IQRA'A e-Attendance Logo">
-</div>
+                <img src="<?= BASE_URL ?>/assets/images/logo.webp"
+                     alt="IQRA'A e-Attendance Logo">
+            </div>
             <span>Iqra'a University</span>
         </div>
 
-       <?php if (Auth::isAdmin()): ?>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Main</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/admin/dashboard">
-            <i class="fas fa-th-large"></i> Dashboard</a></li>
-    </ul>
-</div>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Management</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/admin/users">
-            <i class="fas fa-users"></i> Users</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/courses">
-            <i class="fas fa-book"></i> Courses</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/departments">
-            <i class="fas fa-building"></i> Departments</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/import">
-            <i class="fas fa-file-upload"></i> Bulk Import</a></li>
-    </ul>
-</div>
-
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Analytics</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/admin/reports">
-            <i class="fas fa-chart-bar"></i> Reports</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/claims">
-            <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
-        <li><a href="<?= BASE_URL ?>/admin/audit">
-            <i class="fas fa-shield-alt"></i> Audit Logs</a></li>
-    </ul>
-</div>
+        <?php if (Auth::isAdmin()): ?>
+        <!-- ── ADMIN ── -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Main</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/admin/dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Management</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/admin/users">
+                    <i class="fas fa-users"></i> Users</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/courses">
+                    <i class="fas fa-book"></i> Courses</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/departments">
+                    <i class="fas fa-building"></i> Departments</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/import">
+                    <i class="fas fa-file-upload"></i> Bulk Import</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Analytics</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/admin/reports">
+                    <i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/claims">
+                    <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+                <li><a href="<?= BASE_URL ?>/admin/audit">
+                    <i class="fas fa-shield-alt"></i> Audit Logs</a></li>
+            </ul>
+        </div>
 
         <?php elseif (Auth::isLecturer()): ?>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Main</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/lecturer/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
-        <li><a href="<?= BASE_URL ?>/lecturer/sessions"><i class="fas fa-list"></i> Sessions</a></li>
-    </ul>
-</div>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Actions</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/lecturer/sessions/create"><i class="fas fa-plus-circle"></i> New Session</a></li>
-        <li><a href="<?= BASE_URL ?>/lecturer/claims"><i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
-    </ul>
-</div>
+        <!-- ── LECTURER ── -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Main</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/lecturer/dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="<?= BASE_URL ?>/lecturer/sessions">
+                    <i class="fas fa-list"></i> Sessions</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Actions</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/lecturer/sessions/create">
+                    <i class="fas fa-plus-circle"></i> New Session</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Finance</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/lecturer/claims">
+                    <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+            </ul>
+        </div>
 
-<?php elseif (Auth::isStudent()): ?>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Main</div>
-    <ul>
-        <li><a href="<?= BASE_URL ?>/student/dashboard">
-            <i class="fas fa-th-large"></i> Dashboard</a></li>
-        <li><a href="<?= BASE_URL ?>/student/scan">
-            <i class="fas fa-qrcode"></i> Scan QR Code</a></li>
-        <li><a href="<?= BASE_URL ?>/student/attended">
-            <i class="fas fa-history"></i> Attendance History</a></li>
-    </ul>
-</div>
-<?php
+        <?php elseif (Auth::isStudent()): ?>
+        <!-- ── STUDENT ── -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Main</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/student/dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="<?= BASE_URL ?>/student/scan">
+                    <i class="fas fa-qrcode"></i> Scan QR Code</a></li>
+                <li><a href="<?= BASE_URL ?>/student/attended">
+                    <i class="fas fa-history"></i> Attendance History</a></li>
+            </ul>
+        </div>
+        <?php
+        // Class rep check
+        $db = Database::getInstance();
+        $studentRec = $db->single(
+            "SELECT id FROM students WHERE user_id = ?", [Auth::id()]
+        );
+        $studentIdForSidebar = $studentRec['id'] ?? 0;
+        $isRepCheck = $studentIdForSidebar ? $db->single(
+            "SELECT id FROM enrollments
+              WHERE student_id = ? AND is_class_rep = 1 LIMIT 1",
+            [$studentIdForSidebar]
+        ) : null;
+        if ($isRepCheck):
+            $pendingCount = $db->scalar(
+                "SELECT COUNT(*) FROM manual_attendance ma
+                   JOIN sessions sess ON sess.id = ma.session_id
+                   JOIN enrollments e ON e.course_id = sess.course_id
+                      AND e.student_id = ? AND e.is_class_rep = 1
+                  WHERE ma.status = 'pending'",
+                [$studentIdForSidebar]
+            );
+        ?>
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Class Rep</div>
+            <ul>
+                <li>
+                    <a href="<?= BASE_URL ?>/student/rep-dashboard">
+                        <i class="fas fa-user-shield"></i> Rep Dashboard
+                        <?php if ($pendingCount > 0): ?>
+                        <span style="background:var(--danger);color:#fff;
+                                     border-radius:99px;padding:1px 7px;
+                                     font-size:.68rem;font-weight:700;
+                                     margin-left:auto">
+                            <?= $pendingCount ?>
+                        </span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <?php endif; ?>
 
-// Check if student is class rep
-$db = Database::getInstance();
-$studentRec = $db->single("SELECT id FROM students WHERE user_id = ?", [Auth::id()]);
-$studentIdForSidebar = $studentRec['id'] ?? 0;
-$isRepCheck = $studentIdForSidebar ? $db->single(
-    "SELECT id FROM enrollments WHERE student_id = ? AND is_class_rep = 1 LIMIT 1",
-    [$studentIdForSidebar]
-) : null;
-if ($isRepCheck):
-?>
-<div class="sidebar-section">
-    <div class="sidebar-section-label">Class Rep</div>
-    <ul>
-        <li>
-            <a href="<?= BASE_URL ?>/student/rep-dashboard">
-                <i class="fas fa-user-shield"></i> Rep Dashboard
-                <?php
-                $pendingCount = $db->scalar(
-                    "SELECT COUNT(*) FROM manual_attendance ma
-                       JOIN sessions sess ON sess.id = ma.session_id
-                       JOIN enrollments e ON e.course_id = sess.course_id
-                          AND e.student_id = ? AND e.is_class_rep = 1
-                      WHERE ma.status = 'pending'",
-                    [$studentIdForSidebar]
-                );
-                if ($pendingCount > 0): ?>
-                <span style="background:var(--danger);color:#fff;
-                             border-radius:99px;padding:1px 7px;
-                             font-size:.68rem;font-weight:700;
-                             margin-left:auto">
-                    <?= $pendingCount ?>
-                </span>
-                <?php endif; ?>
-            </a>
-        </li>
-    </ul>
-</div>
-<?php endif; ?>
-<?php endif; ?>
+        <?php elseif (in_array(Auth::role(), ['hod','hoa','registrar','vc','accounts'])): ?>
+        <!-- ── APPROVER ROLES ── -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-label">Main</div>
+            <ul>
+                <li><a href="<?= BASE_URL ?>/approver/dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="<?= BASE_URL ?>/approver/claims">
+                    <i class="fas fa-file-invoice-dollar"></i> Payment Claims</a></li>
+            </ul>
+        </div>
+
+        <?php endif; ?>
+
+        <!-- ── ACCOUNT (all roles) ── -->
         <div class="sidebar-section">
             <div class="sidebar-section-label">Account</div>
             <ul>
-                <li><a href="<?= BASE_URL ?>/profile"><i class="fas fa-user-circle"></i> My Profile</a></li>
-                <li><a href="<?= BASE_URL ?>/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+                <li><a href="<?= BASE_URL ?>/profile">
+                    <i class="fas fa-user-circle"></i> My Profile</a></li>
+                <li><a href="<?= BASE_URL ?>/logout">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
             </ul>
         </div>
 
@@ -149,6 +179,7 @@ if ($isRepCheck):
                 </div>
             </div>
         </div>
+
     </aside>
 
     <!-- ── MAIN ────────────────────────────────────────────── -->
@@ -167,13 +198,14 @@ if ($isRepCheck):
             </div>
             <div class="topbar-right">
                 <span class="topbar-clock" id="clock"></span>
-                <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle dark/light mode">
-                    <i class="fas fa-sun"></i>
-                </button>
-                </button>
-                <button class="icon-btn" title="Notifications">
+                <button class="icon-btn" id="themeToggle" title="Toggle theme"
+        aria-label="Toggle dark/light mode">
+    <i class="fas fa-sun"></i>
+</button>
+                <button class="icon-btn" id="notifBellBtn"
+                        title="Notifications" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
-                    <span class="notif-badge">1</span>
+                    <span class="notif-badge" style="display:none">0</span>
                 </button>
             </div>
         </div>
@@ -187,19 +219,25 @@ unset($_SESSION['flash']);
 if ($flash):
 ?>
 <div class="alert alert-<?= htmlspecialchars($flash['type']) ?>">
-    <i class="fas fa-<?= $flash['type'] === 'success' ? 'check-circle' : ($flash['type'] === 'error' ? 'times-circle' : 'info-circle') ?>"></i>
+    <i class="fas fa-<?= $flash['type'] === 'success'
+        ? 'check-circle'
+        : ($flash['type'] === 'error' ? 'times-circle' : 'info-circle') ?>">
+    </i>
     <?= htmlspecialchars($flash['message']) ?>
 </div>
 <?php endif; ?>
 
 <?php else: ?>
+<!-- ── AUTH PAGES (no sidebar) ── -->
 <div class="auth-wrapper">
 <?php
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 if ($flash):
 ?>
-<div class="alert alert-<?= htmlspecialchars($flash['type']) ?>" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;min-width:320px">
+<div class="alert alert-<?= htmlspecialchars($flash['type']) ?>"
+     style="position:fixed;top:20px;left:50%;transform:translateX(-50%);
+            z-index:9999;min-width:320px">
     <?= htmlspecialchars($flash['message']) ?>
 </div>
 <?php endif; ?>

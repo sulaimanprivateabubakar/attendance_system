@@ -136,5 +136,12 @@ $router->get('/student/scan', 'StudentController@scanQr', ['auth','role:student'
 $router->get('/student/scan',          'StudentController@scanQr',    ['auth','role:student']);
 $router->get('/student/attended',      'StudentController@attended',   ['auth','role:student']);
 
+// Approver routes (hod, hoa, registrar, vc, accounts)
+$router->get( '/approver/dashboard',          'ApproverController@dashboard', ['auth']);
+$router->get( '/approver/claims',             'ApproverController@claims',    ['auth']);
+$router->get( '/approver/claims/:id',         'ApproverController@show',      ['auth']);
+$router->post('/approver/claims/:id/approve', 'ApproverController@approve',   ['auth']);
+$router->post('/approver/claims/:id/reject',  'ApproverController@reject',    ['auth']);
+
 // ── DISPATCH — must be last ───────────────────────────────────────────────────
 $router->dispatch();

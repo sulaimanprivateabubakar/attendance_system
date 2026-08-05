@@ -33,11 +33,22 @@
             <div class="form-group">
                 <label>Role</label>
                 <select name="role" required id="roleSelect" onchange="toggleRegField()">
-                    <option value="">– Select Role –</option>
-                    <option value="student">Student</option>
-                    <option value="lecturer">Lecturer</option>
-                    <option value="admin">Admin</option>
-                </select>
+    <option value="">– Select Role –</option>
+    <optgroup label="Academic">
+        <option value="student">Student</option>
+        <option value="lecturer">Lecturer</option>
+    </optgroup>
+    <optgroup label="Approvers">
+        <option value="hod">Head of Department (HOD)</option>
+        <option value="hoa">Head of Academics (HOA)</option>
+        <option value="registrar">Registrar</option>
+        <option value="vc">Vice Chancellor / Principal</option>
+        <option value="accounts">Accounts Office</option>
+    </optgroup>
+    <optgroup label="System">
+        <option value="admin">System Admin</option>
+    </optgroup>
+</select>
             </div>
         </div>
 
@@ -62,6 +73,15 @@
                 Enter the official staff number.
             </div>
         </div>
+
+        if (in_array($role, ['hod','hoa','registrar','vc','accounts'])) {
+    if ($deptId) {
+        $db->execute(
+            "UPDATE users SET department_id = ? WHERE id = ?",
+            [$deptId, $userId]
+        );
+    }
+}
 
         <div class="form-group">
             <label>Department</label>

@@ -226,12 +226,14 @@ class AuthController extends Controller
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private function redirectByRole(): void
-    {
-        match (Auth::role()) {
-            'admin'    => $this->redirect('/admin/dashboard'),
-            'lecturer' => $this->redirect('/lecturer/dashboard'),
-            'student'  => $this->redirect('/student/dashboard'),
-            default    => $this->redirect('/login'),
-        };
-    }
+{
+    match (Auth::role()) {
+        'admin'    => $this->redirect('/admin/dashboard'),
+        'lecturer' => $this->redirect('/lecturer/dashboard'),
+        'student'  => $this->redirect('/student/dashboard'),
+        'hod','hoa','registrar','vc','accounts'
+                   => $this->redirect('/approver/dashboard'),
+        default    => $this->redirect('/login'),
+    };
+}
 }

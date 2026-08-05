@@ -172,18 +172,44 @@ class ClaimController extends Controller
 
     // POST /lecturer/claims/:id/submit
     public function submit(array $params): void
-    {
-        $this->validateCsrf();
-        $this->db->execute(
-            "UPDATE payment_claims SET status = 'submitted', submitted_at = NOW()
-              WHERE id = ? AND lecturer_id = ? AND status = 'draft'",
-            [(int)$params['id'], $this->lecturerId]
+{
+    $this->validateCsrf();
+    $id = (int)$params['id'];
+
+    $this->db->execute(
+        "UPDATE payment_claims
+            SET status = 'submitted',
+                current_stage = 'hod',
+                submitted_at = NOW()
+          WHERE id = ? AND lecturer_id = ? AND status = 'draft'",
+        [$id, $this->lecturerId]
+    );
+
+    // Notify HOD of the lecturer's department
+    $claim = $this->db->single(
+        "SELECT pc.*, l.department_id
+           FROM payment_claims pc
+           JOIN lecturers l ON l.id = pc.lecturer_id
+          WHERE pc.id = ?", [$id]
+    );
+
+    if ($claim) {
+        $this->db->insert(
+            "INSERT INTO audit_logs (user_id, user_name, user_role, action, module, description)
+             VALUES (?,?,?,?,?,?)",
+            [Auth::id(), Auth::user()['name'], 'lecturer',
+             'claim.submitted', 'claims',
+             "Claim submitted for HOD approval: claim_id=$id month={$claim['month']}"]
         );
-        $this->flash('success', 'Claim submitted successfully.');
-        AuditService::record('claim.submitted', 'claims',
-        "Payment claim submitted: claim_id={$params['id']}");
-        $this->redirect('/lecturer/claims/' . $params['id']);
     }
+
+    require_once APP_PATH . '/services/AuditService.php';
+    AuditService::record('claim.submitted', 'claims',
+        "Payment claim submitted: claim_id=$id");
+
+    $this->flash('success', 'Claim submitted to Head of Department for approval.');
+    $this->redirect('/lecturer/claims/' . $id);
+}
 
     // ── ADMIN ─────────────────────────────────────────────────────────────────
 
